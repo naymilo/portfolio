@@ -34,8 +34,8 @@ const CONFIG = {
     //
     // Only one is needed. If vimeoId is set, it takes priority.
     //https://vimeo.com/user85734886 - Vimeo User
-    // vimeoId: "1093012650",
-    videoUrl: "18069235-uhd_3840_2160_24fps.mp4",
+    vimeoId: "1178880635",
+    //videoUrl: "1https://vimeo.com/1178880635?share=copy&fl=sv&fe=ci",
 
     dimOpacity: 0.55
   },
