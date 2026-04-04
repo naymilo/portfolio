@@ -80,32 +80,32 @@ const CONFIG = {
         }
       ]
     },
-    // {
-    //   id: "code-projects",
-    //   title: "Code & Experiments",
-    //   subtitle: "Open source projects and creative dev work",
-    //   type: "cards",
-    //   items: [
-    //     {
-    //       title: "Particle System",
-    //       description: "WebGL particle engine with physics simulation and audio reactivity.",
-    //       url: "https://github.com",
-    //       tags: ["webgl", "creative-coding"]
-    //     },
-    //     {
-    //       title: "Design Tokens CLI",
-    //       description: "A CLI tool that syncs Figma tokens to CSS variables automatically.",
-    //       url: "https://github.com",
-    //       tags: ["tooling", "figma"]
-    //     },
-    //     {
-    //       title: "Scroll Observatory",
-    //       description: "Lightweight scroll-triggered animation library. Zero dependencies.",
-    //       url: "https://github.com",
-    //       tags: ["library", "animation"]
-    //     }
-    //   ]
-    // },
+    {
+      id: "code-projects",
+      title: "Code & Experiments",
+      subtitle: "Open source projects and creative dev work",
+      type: "cards",
+      items: [
+        {
+          title: "Tennis app",
+          description: "Pickleball and tennis app ",
+          url: "https://pickleballtesiting.pages.dev/",
+          tags: ["figma", "creative-coding", "prototype"]
+        },
+        {
+          title: "Design Tokens CLI",
+          description: "A CLI tool that syncs Figma tokens to CSS variables automatically.",
+          url: "https://github.com",
+          tags: ["tooling", "figma"]
+        },
+        {
+          title: "Scroll Observatory",
+          description: "Lightweight scroll-triggered animation library. Zero dependencies.",
+          url: "https://github.com",
+          tags: ["library", "animation"]
+        }
+      ]
+    },
     // {
     //   id: "case-studies",
     //   title: "Case Studies",
