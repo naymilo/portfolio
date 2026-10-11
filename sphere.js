@@ -3,6 +3,7 @@
  * It turns slowly; balls near the cursor swell outward and light up.
  */
 import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const canvas = document.getElementById('sphere');
 const hero = document.getElementById('hero');
@@ -17,6 +18,8 @@ function init() {
   }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.0;
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const small = window.matchMedia('(max-width: 768px)').matches;
@@ -29,12 +32,14 @@ function init() {
   const BALL_MAX = small ? 0.05 : 0.04;
   const SPIN = 0.07;                // radians per second
   const HOVER_RADIUS = 0.55;        // how far the cursor's influence reaches
-  const HOVER_PUSH = 0.32;          // how far balls swell outward
+  const PUSH = 20;                  // cursor force (resting offset ≈ PUSH / SPRING)
+  const SPRING = 60;                // pull back toward home
+  const DAMPING = 6.5;              // < 2·√SPRING, so balls overshoot and wobble
 
   // Purple gradient across the screen, top-left (light) to bottom-right (deep).
-  const LIGHT = new THREE.Color('#f0abfc');
-  const MID = new THREE.Color('#a855f7');
-  const DEEP = new THREE.Color('#3b0764');
+  const LIGHT = new THREE.Color('#e879f9');
+  const MID = new THREE.Color('#9333ea');
+  const DEEP = new THREE.Color('#2e1065');
   const HOT = new THREE.Color('#f5c2ff');
   const GRADIENT_DIR = new THREE.Vector2(-0.6, 0.8);
 
@@ -42,8 +47,13 @@ function init() {
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
 
-  scene.add(new THREE.AmbientLight('#ffffff', 0.45));
-  const key = new THREE.DirectionalLight('#ffffff', 2.8);
+  // Studio reflections give the balls their glossy, bead-like highlights.
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  scene.environmentIntensity = 0.35;
+
+  scene.add(new THREE.AmbientLight('#ffffff', 0.15));
+  const key = new THREE.DirectionalLight('#ffffff', 2.2);
   key.position.set(-3, 4, 5);
   scene.add(key);
   const rim = new THREE.DirectionalLight('#a78bfa', 1.6);
@@ -51,7 +61,9 @@ function init() {
   scene.add(rim);
 
   const geo = new THREE.IcosahedronGeometry(1, 2);
-  const mat = new THREE.MeshStandardMaterial({ roughness: 0.32, metalness: 0.15 });
+  const mat = new THREE.MeshPhysicalMaterial({
+    roughness: 0.25, metalness: 0.05, clearcoat: 1, clearcoatRoughness: 0.12
+  });
   const mesh = new THREE.InstancedMesh(geo, mat, COUNT);
   mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   scene.add(mesh);
@@ -60,7 +72,9 @@ function init() {
   const home = new Float32Array(COUNT * 3);   // unit direction * radius
   const size = new Float32Array(COUNT);
   const phase = new Float32Array(COUNT);
-  const heat = new Float32Array(COUNT);       // 0..1, eased hover influence
+  const heat = new Float32Array(COUNT);       // 0..1, eased hover influence (drives color)
+  const off = new Float32Array(COUNT * 3);    // spring offset from home (world space)
+  const vel = new Float32Array(COUNT * 3);
   const dir = new THREE.Vector3();
   for (let i = 0; i < COUNT; i++) {
     // uniform direction on the sphere
@@ -120,6 +134,7 @@ function init() {
   const scl = new THREE.Vector3();
   const pos = new THREE.Vector3();
   const nrm = new THREE.Vector3();
+  const away = new THREE.Vector3();
   const col = new THREE.Color();
   const spin = new THREE.Euler(0.35, 0, 0);
   const spinQ = new THREE.Quaternion();
@@ -144,20 +159,35 @@ function init() {
       pos.set(home[i * 3], home[i * 3 + 1], home[i * 3 + 2]).applyQuaternion(spinQ);
       nrm.copy(pos).normalize();
 
+      // cursor influence, plus a push direction: mostly outward, partly away from the cursor
       let target = 0;
+      away.set(0, 0, 0);
       if (hasHit) {
         const d = pos.distanceTo(hit);
         if (d < HOVER_RADIUS) {
           const f = 1 - d / HOVER_RADIUS;
           target = f * f * (3 - 2 * f);
+          away.subVectors(pos, hit).normalize().multiplyScalar(0.6).addScaledVector(nrm, 0.8);
         }
       }
       heat[i] += (target - heat[i]) * ease;
 
-      const breathe = reduceMotion ? 0 : 0.012 * Math.sin(t * 1.2 + phase[i]);
-      pos.addScaledVector(nrm, heat[i] * HOVER_PUSH + breathe);
+      // spring physics (semi-implicit Euler): push − spring·offset − damping·velocity
+      const j = i * 3;
+      const fp = target * PUSH;
+      for (let k = 0; k < 3; k++) {
+        const a = away.getComponent(k) * fp - SPRING * off[j + k] - DAMPING * vel[j + k];
+        vel[j + k] += a * dt;
+        off[j + k] += vel[j + k] * dt;
+      }
+      const speed = Math.hypot(vel[j], vel[j + 1], vel[j + 2]);
+      const glow = Math.min(1, Math.max(heat[i], speed * 0.6));
 
-      scl.setScalar(size[i] * (1 + heat[i] * 0.35));
+      const breathe = reduceMotion ? 0 : 0.012 * Math.sin(t * 1.2 + phase[i]);
+      pos.x += off[j]; pos.y += off[j + 1]; pos.z += off[j + 2];
+      pos.addScaledVector(nrm, breathe);
+
+      scl.setScalar(size[i] * (1 + glow * 0.3));
       m.compose(pos, q, scl);
       mesh.setMatrixAt(i, m);
 
@@ -165,8 +195,8 @@ function init() {
       const g = THREE.MathUtils.clamp(0.5 + 0.5 * (pos.x * GRADIENT_DIR.x + pos.y * GRADIENT_DIR.y) / R, 0, 1);
       if (g > 0.5) col.copy(MID).lerp(LIGHT, (g - 0.5) * 2);
       else col.copy(DEEP).lerp(MID, g * 2);
-      col.lerp(HOT, heat[i]);
-      col.multiplyScalar(1 + heat[i] * 1.6);
+      col.lerp(HOT, glow);
+      col.multiplyScalar(1 + glow * 1.6);
       mesh.setColorAt(i, col);
     }
     mesh.instanceMatrix.needsUpdate = true;
