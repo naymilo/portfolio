@@ -24,7 +24,7 @@ const CONFIG = {
     headline: "Creative work across game development, tooling & design",
     subtext: "A multi-disciplinary portfolio",
     headlineLineHeight: 1.1,  // adjust to control space between lines (e.g. 0.9 tight → 1.4 loose)
-    dimOpacity: 0.4           // dark overlay over the sphere (0 = none, 1 = black)
+    dimOpacity: 0.31          // dark overlay over the sphere (0 = none, 1 = black)
   },
 
   // ── PROJECTS ──
