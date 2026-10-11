@@ -24,13 +24,13 @@ export const DEFAULTS = {
   ballSize: small ? 0.05 : 0.036,
   spin: 0.25,
   // physics
-  lightness: 0.75,               // how easily the cursor moves them (1 / mass)
-  fling: 4.6,                    // force from swipe speed — slice to throw balls
+  lightness: 0.8,                // how easily the cursor moves them (1 / mass)
+  fling: 15,                     // force from swipe speed — slice to throw balls
   push: 8.5,                     // gentle parting just from hovering
   radius: 0.45,
   depthReach: 0.36,              // 0 = a slice hits the whole column, 1 = only nearby depth
   returnPull: 10,                // spring back to the cluster
-  airDrag: 1.65,                 // low = balls fly far and bounce, high = they stop quickly
+  airDrag: 4.35,                 // low = balls fly far and bounce, high = they stop quickly
   maxSpeed: 14,
   jitter: 0.48,
   // look
