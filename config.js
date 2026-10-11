@@ -85,7 +85,7 @@ const CONFIG = {
 
   footer: {
     social: [
-      // { label: "LinkedIn", url: "https://www.linkedin.com/in/<your-handle>/" }
+      { label: "LinkedIn", url: "https://www.linkedin.com/in/nenadmilo/" }
     ]
   }
 
