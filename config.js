@@ -10,7 +10,7 @@
 
 const CONFIG = {
 
-  siteTitle: "Studio Name",
+  siteTitle: "Nenad M",
 
   nav: {
     logo: "NENAD M",
@@ -24,137 +24,68 @@ const CONFIG = {
     headline: "Creative work across game development, tooling & design",
     subtext: "A multi-disciplinary portfolio",
     headlineLineHeight: 1.1,  // adjust to control space between lines (e.g. 0.9 tight → 1.4 loose)
-
-    // ── Hero background ──
-    // OPTION A: Direct video file (mp4/webm) — best for local or self-hosted
-    //   videoUrl: "assets/my-reel.mp4",
-    //
-    // OPTION B: Vimeo embed — set vimeoId instead of videoUrl
-    //   vimeoId: "1093012650",
-    //
-    // Only one is needed. If vimeoId is set, it takes priority.
-    //https://vimeo.com/user85734886 - Vimeo User
-    vimeoId: "1178880635",
-    //videoUrl: "1https://vimeo.com/1178880635?share=copy&fl=sv&fe=ci",
-
-    dimOpacity: 0.55
+    dimOpacity: 0.4           // dark overlay over the sphere (0 = none, 1 = black)
   },
 
-  // ── SECTIONS ──
-  // Each section appears on the homepage in order.
-  // Types: "vimeo" | "cards" | "cases"
-  // To add a section: copy any block below, change the values.
-  // To reorder: move blocks up or down.
-  // To remove: delete the block.
+  // ── PROJECTS ──
+  // Each one is a row in the homepage index and gets its own page at
+  // project.html?p=<slug>. Order here = order on the site.
+  //   thumb:  image used for the hover preview and on phones
+  //   videos: Vimeo embeds on the project page ({ id, ratio: width/height })
+  //   url:    optional external link (shown as a button on the project page)
 
-  sections: [
+  projects: [
     {
-      id: "video-work",
-      title: "Game Dev & Tooling",
-      subtitle: "Selected videos of tooling and game development",
-      type: "vimeo",
-      items: [
-        {
-          title: "Wordscapes",
-          description: "UI, Spine, and Unity integration work",
-          vimeoId: "1013260534",
-          tags: ["UI", "Unity","Spine"]
-        },
-        {
-          title: "AI Workflow - Comfy UI ",
-          description: "3D asset generation demo for bulk processing",
-          vimeoId: "1130410040",
-          tags: ["Comfy UI", "AI", "3D"]
-        },
-        {
-          title: "AI Workflow - Comfy UI ",
-          description: "3D asset generation demo for bulk processing",
-          vimeoId: "836761841",
-          tags: ["Comfy UI", "AI", "3D"]
-        },
-        {
-          title: "Unreal engine rapid protortping ",
-          description: "Enviorment protortping",
-          vimeoId: "1031729867",
-          tags: ["Unreal", "Enviorment art", "3D"]
-        }
-      ]
+      slug: "wordscapes",
+      title: "Wordscapes",
+      discipline: "Game UI",
+      summary: "UI, Spine animation, and Unity integration work for Wordscapes.",
+      tags: ["UI", "Unity", "Spine"],
+      thumb: "assets/thumbs/wordscapes.jpg",
+      videos: [{ id: "1013260534", ratio: 4 / 3 }]
     },
     {
-      id: "code-projects",
-      title: "Code & Experiments",
-      subtitle: "Open source projects and creative dev work",
-      type: "cards",
-      items: [
-        {
-          title: "Tennis app",
-          description: "Pickleball and tennis app ",
-          url: "https://pickleballtesiting.pages.dev/",
-          tags: ["figma", "creative-coding", "prototype"]
-        },
-        {
-          title: "Design Tokens CLI",
-          description: "A CLI tool that syncs Figma tokens to CSS variables automatically.",
-          url: "https://github.com",
-          tags: ["tooling", "figma"]
-        },
-        {
-          title: "Scroll Observatory",
-          description: "Lightweight scroll-triggered animation library. Zero dependencies.",
-          url: "https://github.com",
-          tags: ["library", "animation"]
-        }
-      ]
+      slug: "comfyui-3d",
+      title: "3D asset pipeline",
+      discipline: "AI tooling",
+      summary: "A ComfyUI workflow that generates 3D assets in bulk.",
+      tags: ["ComfyUI", "AI", "3D"],
+      thumb: "assets/thumbs/comfyui-3d.jpg",
+      videos: [{ id: "1130410040", ratio: 1280 / 675 }]
     },
-    // {
-    //   id: "case-studies",
-    //   title: "Case Studies",
-    //   subtitle: "In-depth looks at selected projects",
-    //   type: "cases",
-    //   items: [
-    //     {
-    //       title: "Reimagining Onboarding",
-    //       description: "How motion design reduced drop-off by 34% for a health-tech startup.",
-    //       image: "",
-    //       url: "#",
-    //       tags: ["ux", "motion"]
-    //     },
-    //     {
-    //       title: "Generative Identity System",
-    //       description: "A living brand that evolves — built with code, guided by design principles.",
-    //       image: "",
-    //       url: "#",
-    //       tags: ["branding", "creative-coding"]
-    //     }
-    //   ]
-    // },
-    // {
-    //   id: "prototypes",
-    //   title: "Prototypes & Demos",
-    //   subtitle: "Interactive experiments and proof-of-concepts",
-    //   type: "cards",
-    //   items: [
-    //     {
-    //       title: "3D Product Configurator",
-    //       description: "Three.js product viewer with real-time material and lighting controls.",
-    //       url: "#",
-    //       tags: ["threejs", "interactive"]
-    //     },
-    //     {
-    //       title: "Voice-Driven UI",
-    //       description: "Prototype exploring voice commands for navigating complex dashboards.",
-    //       url: "#",
-    //       tags: ["prototype", "accessibility"]
-    //     }
-    //   ]
-    // }
+    {
+      slug: "unity-light-baking",
+      title: "Light baking workflow",
+      discipline: "Tech art",
+      summary: "Unity tooling for mesh cloning and saving baked light maps into prefabs.",
+      tags: ["Unity", "Tooling", "Lighting"],
+      thumb: "assets/thumbs/unity-light-baking.jpg",
+      videos: [{ id: "836761841", ratio: 16 / 9 }]
+    },
+    {
+      slug: "unreal-environments",
+      title: "Unreal environments",
+      discipline: "Prototyping",
+      summary: "Rapid environment prototyping in Unreal Engine.",
+      tags: ["Unreal", "Environment art", "3D"],
+      thumb: "assets/thumbs/unreal-environments.jpg",
+      videos: [{ id: "1031729867", ratio: 16 / 9 }]
+    },
+    {
+      slug: "swing",
+      title: "Swing",
+      discipline: "Product",
+      summary: "A tennis and pickleball app. One tap to start tracking a match.",
+      tags: ["Figma", "Prototype", "Creative coding"],
+      thumb: "assets/thumbs/tennis-app.jpg",
+      url: "https://pickleballtesiting.pages.dev/",
+      urlLabel: "Open the prototype"
+    }
   ],
 
   footer: {
-    tagline: "Let's make something.",
-    email: "hello@studio.com",
     social: [
-      { label: "LinkedIn", url: "https://linkedin.com" }
+      // { label: "LinkedIn", url: "https://www.linkedin.com/in/<your-handle>/" }
     ]
   }
 
