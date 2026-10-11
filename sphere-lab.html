@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sphere lab — Nenad M</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    html, body { height: 100%; overflow: hidden; }
+    #lab { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+    .lab-overlay { position: fixed; inset: 0; pointer-events: none; background: #0a0a0a; opacity: 0.4; }
+    .lab-copy { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; text-align: center; padding: 0 var(--gutter); pointer-events: none; user-select: none; }
+    .lab-copy h1 { font-size: clamp(2.8rem, 6vw, 5.2rem); font-weight: 700; line-height: 1.1;
+      letter-spacing: -0.03em; max-width: 820px; margin-bottom: 1.2rem; }
+    .lab-copy p { font-size: 1.05rem; font-weight: 300; color: rgba(240, 237, 230, 0.65); letter-spacing: 0.03em; }
+    .lab-back { position: fixed; left: var(--gutter); top: 1.5rem; z-index: 5; font-size: 0.82rem;
+      letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-primary); text-decoration: none; }
+    .lab-hint { position: fixed; left: var(--gutter); bottom: 1.5rem; font-size: 0.75rem; color: var(--text-muted);
+      letter-spacing: 0.04em; pointer-events: none; }
+    .lab-error { position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+      color: var(--text-secondary); padding: var(--gutter); text-align: center; }
+    .lil-gui.root { --font-family: 'Outfit', system-ui, sans-serif; --font-size: 12px; top: 4rem !important; }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
+        "lil-gui": "https://cdn.jsdelivr.net/npm/lil-gui@0.19.2/dist/lil-gui.esm.min.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <canvas id="lab"></canvas>
+  <div class="lab-overlay" id="overlay"></div>
+  <div class="lab-copy" id="copy">
+    <h1>Creative work across game development, tooling &amp; design</h1>
+    <p>A multi-disciplinary portfolio</p>
+  </div>
+  <a class="lab-back" href="index.html">Nenad M</a>
+  <div class="lab-hint">Sphere lab · move or drag across the sphere · tune it in the panel, then “Copy settings”</div>
+  <div class="lab-error" id="error">This browser can’t run the GPU particle simulation.</div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { GPUComputationRenderer } from 'three/addons/misc/GPUComputationRenderer.js';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+    import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+    import GUI from 'lil-gui';
+
+    /* ════════════════════════════════════════════════
+     *  Settings — everything the panel can change
+     * ════════════════════════════════════════════════ */
+    const small = matchMedia('(max-width: 768px)').matches;
+    const DEFAULTS = {
+      // shape
+      particles: small ? 96 : 128,   // texture side; count = side²
+      screenSize: 0.46,              // sphere diameter as a fraction of screen height
+      shell: 0.18,                   // shell thickness (0 = hollow skin)
+      strays: 0.03,                  // fraction of loose balls outside the shell
+      ballSize: small ? 0.05 : 0.038,
+      spin: 0.07,
+      // physics
+      spring: 38,
+      damping: 5.5,
+      push: 26,
+      radius: 0.55,
+      stir: 1.6,
+      jitter: 0.12,
+      // look
+      light: '#e879f9',
+      mid: '#9333ea',
+      deep: '#2e1065',
+      hot: '#f5d0fe',
+      specular: 0.55,
+      rim: 0.35,
+      glowGain: 1.4,
+      glowFloor: 0.25,
+      bloom: 0.55,
+      bloomRadius: 0.5,
+      bloomThreshold: 0.72,
+      exposure: 1.0,
+      // page
+      overlay: 0.4,
+      showText: true,
+    };
+    const STORE = 'sphere-lab-settings';
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(STORE) || '{}'); } catch (e) {}
+    const S = { ...DEFAULTS, ...saved };
+    const save = () => { try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) {} };
+
+    /* ── Renderer ── */
+    const canvas = document.getElementById('lab');
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    } catch (e) {
+      document.getElementById('error').style.display = 'flex';
+      throw e;
+    }
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color('#0a0a0a');
+    const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+
+    // multisampled target so the ball edges stay smooth through the bloom pass
+    const composer = new EffectComposer(renderer,
+      new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 }));
+    composer.addPass(new RenderPass(scene, camera));
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(1, 1), S.bloom, S.bloomRadius, S.bloomThreshold);
+    composer.addPass(bloomPass);
+    composer.addPass(new OutputPass());
+
+    const R = 1;
+
+    /* ════════════════════════════════════════════════
+     *  GPU simulation — position + velocity textures
+     * ════════════════════════════════════════════════ */
+    const velocityShader = /* glsl */`
+      uniform float uDt, uTime, uSpring, uDamping, uPush, uRadius, uStir, uJitter, uActive;
+      uniform vec3 uPointer, uPointerVel;
+      uniform mat3 uRot;
+      uniform sampler2D uHome;
+
+      void main() {
+        vec2 uv = gl_FragCoord.xy / resolution.xy;
+        vec3 p = texture2D(texturePosition, uv).xyz;
+        vec3 v = texture2D(textureVelocity, uv).xyz;
+        vec4 h = texture2D(uHome, uv);
+        vec3 home = uRot * h.xyz;
+
+        // spring back toward the (rotating) home position
+        vec3 acc = uSpring * (home - p) - uDamping * v;
+
+        // cursor: shove outward/away, and drag along with the cursor's motion
+        vec3 d = p - uPointer;
+        float f = uActive * smoothstep(uRadius, 0.0, length(d));
+        vec3 outward = normalize(p + 1e-5);
+        acc += f * uPush * normalize(d + outward * 0.6 + 1e-5);
+        acc += f * uStir * uPointerVel;
+
+        // a little life when nothing is happening
+        float s = h.w * 61.0;
+        acc += uJitter * vec3(sin(uTime * 1.3 + s), sin(uTime * 1.1 + s * 1.7), sin(uTime * 1.7 + s * 2.3));
+
+        v += acc * uDt;
+        gl_FragColor = vec4(v, 1.0);
+      }
+    `;
+    const positionShader = /* glsl */`
+      uniform float uDt;
+      void main() {
+        vec2 uv = gl_FragCoord.xy / resolution.xy;
+        vec4 p = texture2D(texturePosition, uv);
+        p.xyz += texture2D(textureVelocity, uv).xyz * uDt;
+        gl_FragColor = p;
+      }
+    `;
+
+    /* ════════════════════════════════════════════════
+     *  Render — each particle is a point shaded as a ball
+     * ════════════════════════════════════════════════ */
+    const ballVertex = /* glsl */`
+      uniform sampler2D uPos, uVel;
+      uniform float uSize, uScale, uGlowGain, uGlowFloor;
+      uniform vec3 uLight, uMid, uDeep, uHot;
+      uniform vec2 uGradDir;
+      attribute vec2 aRef;
+      attribute float aSeed;
+      varying vec3 vColor;
+      varying float vGlow;
+
+      void main() {
+        vec3 p = texture2D(uPos, aRef).xyz;
+        vec3 v = texture2D(uVel, aRef).xyz;
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        gl_Position = projectionMatrix * mv;
+
+        // only motion beyond the idle spin/jitter glows — i.e. balls the cursor shoved
+        vGlow = clamp((length(v) - uGlowFloor) * uGlowGain, 0.0, 1.0);
+        float size = uSize * mix(0.7, 1.15, aSeed) * (1.0 + vGlow * 0.3);
+        gl_PointSize = size * uScale / -mv.z;
+
+        // diagonal gradient across the screen: light top-left → deep bottom-right
+        float g = clamp(0.5 + 0.5 * dot(p.xy, uGradDir), 0.0, 1.0);
+        vec3 c = g > 0.5 ? mix(uMid, uLight, (g - 0.5) * 2.0) : mix(uDeep, uMid, g * 2.0);
+        vColor = mix(c, uHot, vGlow);
+      }
+    `;
+    const ballFragment = /* glsl */`
+      uniform float uSpecular, uRim;
+      varying vec3 vColor;
+      varying float vGlow;
+
+      void main() {
+        vec2 c = gl_PointCoord * 2.0 - 1.0;
+        c.y = -c.y;
+        float r2 = dot(c, c);
+        if (r2 > 1.0) discard;
+
+        vec3 n = vec3(c, sqrt(1.0 - r2));        // fake sphere normal
+        vec3 L = normalize(vec3(-0.5, 0.65, 0.8));
+        vec3 H = normalize(L + vec3(0.0, 0.0, 1.0));
+        float diff = max(dot(n, L), 0.0);
+        float spec = pow(max(dot(n, H), 0.0), 60.0);
+        float fres = pow(1.0 - n.z, 3.0);
+
+        vec3 col = vColor * (0.18 + 0.9 * diff)
+                 + uSpecular * spec
+                 + uRim * fres * vColor
+                 + vGlow * vColor * 1.2;
+        gl_FragColor = vec4(col, smoothstep(1.0, 0.82, r2));
+
+        #include <tonemapping_fragment>
+        #include <colorspace_fragment>
+      }
+    `;
+
+    const ballMaterial = new THREE.ShaderMaterial({
+      vertexShader: ballVertex,
+      fragmentShader: ballFragment,
+      uniforms: {
+        uPos: { value: null }, uVel: { value: null },
+        uSize: { value: S.ballSize }, uScale: { value: 1 }, uGlowGain: { value: S.glowGain }, uGlowFloor: { value: S.glowFloor },
+        uLight: { value: new THREE.Color(S.light) }, uMid: { value: new THREE.Color(S.mid) },
+        uDeep: { value: new THREE.Color(S.deep) }, uHot: { value: new THREE.Color(S.hot) },
+        uGradDir: { value: new THREE.Vector2(-0.6, 0.8) },
+        uSpecular: { value: S.specular }, uRim: { value: S.rim },
+      },
+      alphaToCoverage: true,
+    });
+
+    let gpu, posVar, velVar, points, homeTexture;
+
+    function build() {
+      if (gpu) gpu.dispose();
+      if (points) { scene.remove(points); points.geometry.dispose(); }
+      if (homeTexture) homeTexture.dispose();
+
+      const side = S.particles;
+      const count = side * side;
+      gpu = new GPUComputationRenderer(side, side, renderer);
+
+      // home positions: dense shell, some inside, a few strays; w = random seed
+      const home = new Float32Array(count * 4);
+      for (let i = 0; i < count; i++) {
+        const u = Math.random() * 2 - 1, a = Math.random() * Math.PI * 2, s = Math.sqrt(1 - u * u);
+        const r = Math.random() < S.strays
+          ? R * (1.04 + Math.random() * 0.16)
+          : R * (1 - S.shell * Math.random() ** 2);
+        home[i * 4] = s * Math.cos(a) * r;
+        home[i * 4 + 1] = u * r;
+        home[i * 4 + 2] = s * Math.sin(a) * r;
+        home[i * 4 + 3] = Math.random();
+      }
+      homeTexture = new THREE.DataTexture(home, side, side, THREE.RGBAFormat, THREE.FloatType);
+      homeTexture.needsUpdate = true;
+
+      // start already tilted/rotated like the first frame, so nothing springs on load
+      const pos0 = gpu.createTexture();
+      const start = new THREE.Matrix4().makeRotationFromEuler(rot);
+      const tmp = new THREE.Vector3();
+      for (let i = 0; i < count; i++) {
+        tmp.set(home[i * 4], home[i * 4 + 1], home[i * 4 + 2]).applyMatrix4(start);
+        pos0.image.data.set([tmp.x, tmp.y, tmp.z, home[i * 4 + 3]], i * 4);
+      }
+      const vel0 = gpu.createTexture();   // zeros
+
+      velVar = gpu.addVariable('textureVelocity', velocityShader, vel0);
+      posVar = gpu.addVariable('texturePosition', positionShader, pos0);
+      gpu.setVariableDependencies(velVar, [posVar, velVar]);
+      gpu.setVariableDependencies(posVar, [posVar, velVar]);
+
+      Object.assign(velVar.material.uniforms, {
+        uDt: { value: 0 }, uTime: { value: 0 }, uSpring: { value: S.spring }, uDamping: { value: S.damping },
+        uPush: { value: S.push }, uRadius: { value: S.radius }, uStir: { value: S.stir },
+        uJitter: { value: S.jitter }, uActive: { value: 0 },
+        uPointer: { value: new THREE.Vector3(99, 99, 99) }, uPointerVel: { value: new THREE.Vector3() },
+        uRot: { value: new THREE.Matrix3() }, uHome: { value: homeTexture },
+      });
+      posVar.material.uniforms.uDt = { value: 0 };
+
+      const err = gpu.init();
+      if (err) {
+        document.getElementById('error').style.display = 'flex';
+        throw new Error(err);
+      }
+
+      // one vertex per particle; aRef = where its data lives in the textures
+      const refs = new Float32Array(count * 2), seeds = new Float32Array(count);
+      for (let i = 0; i < count; i++) {
+        refs[i * 2] = ((i % side) + 0.5) / side;
+        refs[i * 2 + 1] = (Math.floor(i / side) + 0.5) / side;
+        seeds[i] = home[i * 4 + 3];
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(count * 3), 3));
+      geo.setAttribute('aRef', new THREE.BufferAttribute(refs, 2));
+      geo.setAttribute('aSeed', new THREE.BufferAttribute(seeds, 1));
+      points = new THREE.Points(geo, ballMaterial);
+      points.frustumCulled = false;
+      scene.add(points);
+      info.count = count.toLocaleString();
+    }
+
+    /* ── Sizing ── */
+    function resize() {
+      const w = innerWidth, h = innerHeight;
+      renderer.setSize(w, h);
+      composer.setSize(w, h);
+      bloomPass.resolution.set(w, h);
+      camera.aspect = w / h;
+      const frac = Math.min(S.screenSize, 0.8 * camera.aspect);
+      const halfFov = THREE.MathUtils.degToRad(camera.fov / 2);
+      camera.position.set(0, 0, (2 * R) / (frac * 2 * Math.tan(halfFov)));
+      camera.updateProjectionMatrix();
+      // pixels per world unit at distance 1 — turns ball size into gl_PointSize
+      ballMaterial.uniforms.uScale.value = renderer.domElement.height * 0.5 * camera.projectionMatrix.elements[5];
+    }
+    addEventListener('resize', resize);
+
+    /* ── Pointer → point on the sphere, plus how fast it's moving ── */
+    const raycaster = new THREE.Raycaster();
+    const ndc = new THREE.Vector2();
+    const hitSphere = new THREE.Sphere(new THREE.Vector3(), R * 1.05);
+    const hit = new THREE.Vector3(), lastHit = new THREE.Vector3(), hitVel = new THREE.Vector3();
+    let pointerIn = false, hadHit = false, active = 0;
+    canvas.addEventListener('pointermove', e => {
+      ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+      pointerIn = true;
+    });
+    canvas.addEventListener('pointerleave', () => { pointerIn = false; });
+    canvas.addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') pointerIn = false; });
+
+    /* ── Loop ── */
+    const info = { count: '' };
+    const rot = new THREE.Euler(0.35, 0, 0);
+    const rotM4 = new THREE.Matrix4();
+    let angle = 0, last = performance.now(), time = 0;
+
+    function frame(now) {
+      const dt = Math.min((now - last) / 1000, 1 / 30);
+      last = now;
+      time += dt;
+      angle += dt * S.spin;
+      rot.y = angle;
+      rotM4.makeRotationFromEuler(rot);
+
+      let hasHit = false;
+      if (pointerIn) {
+        raycaster.setFromCamera(ndc, camera);
+        hasHit = raycaster.ray.intersectSphere(hitSphere, hit) !== null;
+      }
+      if (hasHit && hadHit && dt > 0) {
+        const v = hit.clone().sub(lastHit).divideScalar(dt);
+        if (v.length() > 6) v.setLength(6);
+        hitVel.lerp(v, 0.3);
+      } else {
+        hitVel.multiplyScalar(0.85);
+      }
+      if (hasHit) lastHit.copy(hit);
+      hadHit = hasHit;
+      active += ((hasHit ? 1 : 0) - active) * Math.min(1, dt * 8);
+
+      const u = velVar.material.uniforms;
+      u.uTime.value = time;
+      u.uRot.value.setFromMatrix4(rotM4);
+      u.uActive.value = active;
+      if (hasHit) u.uPointer.value.copy(hit);
+      u.uPointerVel.value.copy(hitVel);
+
+      // two substeps keep the stiff spring stable
+      const sub = dt / 2;
+      u.uDt.value = sub;
+      posVar.material.uniforms.uDt.value = sub;
+      gpu.compute();
+      gpu.compute();
+
+      ballMaterial.uniforms.uPos.value = gpu.getCurrentRenderTarget(posVar).texture;
+      ballMaterial.uniforms.uVel.value = gpu.getCurrentRenderTarget(velVar).texture;
+      composer.render();
+      requestAnimationFrame(frame);
+    }
+
+    /* ════════════════════════════════════════════════
+     *  Panel
+     * ════════════════════════════════════════════════ */
+    const overlayEl = document.getElementById('overlay');
+    const copyEl = document.getElementById('copy');
+    function applyAll() {
+      const v = velVar.material.uniforms;
+      v.uSpring.value = S.spring; v.uDamping.value = S.damping; v.uPush.value = S.push;
+      v.uRadius.value = S.radius; v.uStir.value = S.stir; v.uJitter.value = S.jitter;
+      const b = ballMaterial.uniforms;
+      b.uSize.value = S.ballSize; b.uGlowGain.value = S.glowGain; b.uGlowFloor.value = S.glowFloor;
+      b.uSpecular.value = S.specular; b.uRim.value = S.rim;
+      b.uLight.value.set(S.light); b.uMid.value.set(S.mid); b.uDeep.value.set(S.deep); b.uHot.value.set(S.hot);
+      bloomPass.strength = S.bloom; bloomPass.radius = S.bloomRadius; bloomPass.threshold = S.bloomThreshold;
+      renderer.toneMappingExposure = S.exposure;
+      overlayEl.style.opacity = S.overlay;
+      copyEl.style.display = S.showText ? 'flex' : 'none';
+      resize();
+      save();
+    }
+
+    build();
+    resize();
+    applyAll();
+    requestAnimationFrame(frame);
+
+    const gui = new GUI({ title: 'Sphere lab' });
+    const shape = gui.addFolder('Shape');
+    shape.add(S, 'particles', { '4k': 64, '9k': 96, '16k': 128, '36k': 192, '65k': 256 }).name('balls').onChange(() => { build(); applyAll(); });
+    shape.add(info, 'count').name('count').disable().listen();
+    shape.add(S, 'screenSize', 0.2, 0.8, 0.01).name('size on screen').onChange(applyAll);
+    shape.add(S, 'ballSize', 0.01, 0.1, 0.001).name('ball size').onChange(applyAll);
+    shape.add(S, 'shell', 0, 0.6, 0.01).name('shell depth').onFinishChange(() => { build(); applyAll(); });
+    shape.add(S, 'strays', 0, 0.2, 0.005).name('strays').onFinishChange(() => { build(); applyAll(); });
+    shape.add(S, 'spin', 0, 0.5, 0.01).onChange(save);
+
+    const phys = gui.addFolder('Physics');
+    phys.add(S, 'push', 0, 80, 0.5).name('cursor push').onChange(applyAll);
+    phys.add(S, 'radius', 0.1, 1.5, 0.01).name('cursor radius').onChange(applyAll);
+    phys.add(S, 'stir', 0, 6, 0.05).name('drag along').onChange(applyAll);
+    phys.add(S, 'spring', 2, 120, 0.5).name('spring back').onChange(applyAll);
+    phys.add(S, 'damping', 0.5, 20, 0.1).name('damping').onChange(applyAll);
+    phys.add(S, 'jitter', 0, 2, 0.01).name('idle jitter').onChange(applyAll);
+
+    const look = gui.addFolder('Look');
+    look.addColor(S, 'light').name('light (top-left)').onChange(applyAll);
+    look.addColor(S, 'mid').onChange(applyAll);
+    look.addColor(S, 'deep').name('deep (bottom-right)').onChange(applyAll);
+    look.addColor(S, 'hot').name('moving glow').onChange(applyAll);
+    look.add(S, 'glowGain', 0, 4, 0.01).name('glow amount').onChange(applyAll);
+    look.add(S, 'glowFloor', 0, 1, 0.01).name('glow starts at').onChange(applyAll);
+    look.add(S, 'specular', 0, 1.5, 0.01).name('highlight').onChange(applyAll);
+    look.add(S, 'rim', 0, 1.5, 0.01).name('rim light').onChange(applyAll);
+    look.add(S, 'bloom', 0, 2, 0.01).onChange(applyAll);
+    look.add(S, 'bloomRadius', 0, 1, 0.01).name('bloom radius').onChange(applyAll);
+    look.add(S, 'bloomThreshold', 0, 1, 0.01).name('bloom threshold').onChange(applyAll);
+    look.add(S, 'exposure', 0.3, 2, 0.01).onChange(applyAll);
+
+    const page = gui.addFolder('Page');
+    page.add(S, 'overlay', 0, 0.9, 0.01).name('dark overlay').onChange(applyAll);
+    page.add(S, 'showText').name('show headline').onChange(applyAll);
+
+    const actions = {
+      copy() {
+        const json = JSON.stringify(S, null, 2);
+        navigator.clipboard?.writeText(json).then(
+          () => { copyBtn.name('Copied ✓'); setTimeout(() => copyBtn.name('Copy settings'), 1500); },
+          () => prompt('Copy these settings:', json)
+        );
+      },
+      reset() {
+        Object.assign(S, DEFAULTS);
+        gui.controllersRecursive().forEach(c => c.updateDisplay());
+        build(); applyAll();
+      },
+    };
+    const copyBtn = gui.add(actions, 'copy').name('Copy settings');
+    gui.add(actions, 'reset').name('Reset to defaults');
+    if (small) gui.close();
+  </script>
+</body>
+</html>
