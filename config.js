@@ -46,11 +46,14 @@ const CONFIG = {
       urlLabel: "Open the prototype"
     },
     {
-      slug: "temp",
-      title: "Temp",
+      slug: "sleep-dojo",
+      title: "Sleep Dojo",
       discipline: "Product",
-      summary: "A sound app. Placeholder — details coming.",
-      tags: []
+      summary: "Your ADHD sleep companion. A white-noise sleep and alarm app.",
+      tags: [],
+      thumb: "assets/thumbs/sleep-dojo.jpg",
+      url: "https://sleepdojo.pages.dev/",
+      urlLabel: "Open the prototype"
     },
     {
       slug: "wordscapes",
