@@ -23,21 +23,11 @@
   box-sizing: border-box;
 }
 
+/* Homepage hero ↔ work transitions are animated in site.js (homeScroll) */
 html {
-  scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-/* Homepage: scrolling snaps between the hero and the work index.
-   Mandatory with a mouse/trackpad; gentler on touch, where mandatory snapping fights long swipes. */
-html.snap { scroll-snap-type: y proximity; }
-@media (hover: hover) and (pointer: fine) {
-  html.snap { scroll-snap-type: y mandatory; }
-}
-.snap .hero,
-.snap .work { scroll-snap-align: start; }
-.snap .footer { scroll-snap-align: end; }
 
 body {
   font-family: var(--font-body);
