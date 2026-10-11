@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Studio</title>
+  <title>Nenad M</title>
   <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js" } }
+  </script>
 </head>
 <body>
 
@@ -16,7 +19,9 @@
 
   <!-- HERO -->
   <section class="hero" id="hero">
-    <div class="hero-bg" id="hero-bg"></div>
+    <div class="hero-bg">
+      <canvas id="sphere" class="hero-sphere"></canvas>
+    </div>
     <div class="hero-overlay" id="hero-overlay"></div>
     <div class="hero-content">
       <h1 class="hero-headline" id="hero-headline"></h1>
@@ -28,160 +33,83 @@
     </div>
   </section>
 
-  <!-- DYNAMIC SECTIONS -->
-  <div class="sections-container" id="work"></div>
+  <!-- WORK INDEX -->
+  <section class="work" id="work">
+    <div class="work-head">
+      <h2 class="work-label">Selected work</h2>
+      <span class="work-count" id="work-count"></span>
+    </div>
+    <div class="work-body">
+      <ol class="work-list" id="work-list"></ol>
+      <div class="work-preview" id="work-preview" aria-hidden="true"></div>
+    </div>
+  </section>
 
   <!-- FOOTER -->
   <footer class="footer" id="footer"></footer>
 
   <!-- CONFIG — edit config.js to update the entire site -->
   <script src="config.js"></script>
+  <script src="site.js"></script>
+  <script type="module" src="sphere.js"></script>
 
   <script>
     (() => {
       const config = CONFIG;
+      document.title = config.siteTitle;
 
-      /* ── Nav ── */
-      document.title = config.siteTitle || 'Studio';
-      document.getElementById('nav-logo').textContent = config.nav.logo;
-      const navLinks = document.getElementById('nav-links');
-      config.nav.links.forEach(link => {
-        const li = document.createElement('li');
-        const a = document.createElement('a');
-        a.textContent = link.label;
-        if (link.scrollTo) {
-          a.href = link.scrollTo;
-        } else if (link.href) {
-          a.href = link.href;
-        }
-        li.appendChild(a);
-        navLinks.appendChild(li);
-      });
-
-      /* ── Hero background ── */
+      /* ── Hero ── */
       const hero = config.hero;
       const headlineEl = document.getElementById('hero-headline');
       headlineEl.textContent = hero.headline;
       if (hero.headlineLineHeight) headlineEl.style.lineHeight = hero.headlineLineHeight;
       document.getElementById('hero-subtext').textContent = hero.subtext;
+      const dim = hero.dimOpacity ?? 0.4;
+      document.getElementById('hero-overlay').style.background = `rgba(10,10,10,${dim})`;
 
-      const heroBg = document.getElementById('hero-bg');
+      /* ── Work index ── */
+      const projects = config.projects;
+      const pad = n => String(n).padStart(2, '0');
+      document.getElementById('work-count').textContent = pad(projects.length);
 
-      if (hero.vimeoId) {
-        // Vimeo background embed — works everywhere, no file hosting needed
-        const iframe = document.createElement('iframe');
-        const vimeoHash = hero.vimeoHash ? `&h=${hero.vimeoHash}` : '';
-        iframe.src = `https://player.vimeo.com/video/${hero.vimeoId}?background=1&autoplay=1&loop=1&muted=1&title=0&byline=0&portrait=0${vimeoHash}`;
-        iframe.setAttribute('frameborder', '0');
-        iframe.setAttribute('allow', 'autoplay; fullscreen');
-        heroBg.appendChild(iframe);
-      } else if (hero.videoUrl) {
-        // Direct video file
-        const video = document.createElement('video');
-        video.src = hero.videoUrl;
-        video.autoplay = true;
-        video.muted = true;
-        video.loop = true;
-        video.playsInline = true;
-        video.className = 'hero-video';
-        heroBg.appendChild(video);
-      }
+      const list = document.getElementById('work-list');
+      const preview = document.getElementById('work-preview');
+      const arrow = `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
 
-      const overlay = document.getElementById('hero-overlay');
-      const dim = hero.dimOpacity || 0.5;
-      overlay.style.background = `rgba(10,10,10,${dim})`;
+      list.innerHTML = projects.map((p, i) => `
+        <li>
+          <a class="work-row" href="project.html?p=${p.slug}" data-i="${i}" style="--d:${i * 80}ms">
+            ${p.thumb ? `<img class="work-thumb" src="${p.thumb}" alt="" loading="lazy">` : ''}
+            <span class="work-num">${pad(i + 1)}</span>
+            <span class="work-title">${p.title}</span>
+            <span class="work-disc">${p.discipline}</span>
+            <span class="work-cta">View project ${arrow}</span>
+          </a>
+        </li>`).join('');
 
-      /* ── Sections ── */
-      const container = document.getElementById('work');
-      config.sections.forEach(section => {
-        const el = document.createElement('section');
-        el.className = 'section';
-        el.id = section.id;
+      preview.innerHTML = projects
+        .map((p, i) => p.thumb ? `<img src="${p.thumb}" alt="" data-i="${i}"${i === 0 ? ' class="active"' : ''}>` : '')
+        .join('');
 
-        let itemsHTML = '';
-
-        if (section.type === 'vimeo') {
-          itemsHTML = `<div class="vimeo-grid">${section.items.map(item => `
-            <div class="vimeo-item">
-              <div class="vimeo-embed">
-                <iframe src="https://player.vimeo.com/video/${item.vimeoId}?title=0&byline=0&portrait=0${item.vimeoHash ? '&h=' + item.vimeoHash : ''}"
-                  allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe>
-              </div>
-              <div class="vimeo-meta">
-                <div class="vimeo-title">${item.title}</div>
-                <div class="vimeo-desc">${item.description}</div>
-                ${item.tags ? `<div class="card-tags">${item.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>` : ''}
-              </div>
-            </div>`).join('')}</div>`;
-
-        } else if (section.type === 'cases') {
-          itemsHTML = `<div class="cases-grid">${section.items.map(item => `
-            <a class="case-card" href="${item.url || '#'}" target="_blank" rel="noopener">
-              <div class="case-image">
-                ${item.image ? `<img src="${item.image}" alt="${item.title}" loading="lazy">` : 'Image placeholder'}
-              </div>
-              <div class="case-body">
-                <div class="case-title">${item.title}</div>
-                <div class="case-desc">${item.description}</div>
-                ${item.tags ? `<div class="card-tags">${item.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>` : ''}
-              </div>
-            </a>`).join('')}</div>`;
-
-        } else {
-          itemsHTML = `<div class="cards-grid">${section.items.map(item => `
-            <a class="card" href="${item.url || '#'}" target="_blank" rel="noopener">
-              <div class="card-arrow">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M7 17L17 7M17 7H7M17 7V17"/>
-                </svg>
-              </div>
-              <div class="card-title">${item.title}</div>
-              <div class="card-description">${item.description}</div>
-              ${item.tags ? `<div class="card-tags">${item.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>` : ''}
-            </a>`).join('')}</div>`;
-        }
-
-        el.innerHTML = `
-          <div class="section-header">
-            <h2 class="section-title">${section.title}</h2>
-            ${section.subtitle ? `<span class="section-subtitle">${section.subtitle}</span>` : ''}
-          </div>
-          ${itemsHTML}
-        `;
-
-        container.appendChild(el);
+      // Hovering a row crossfades the preview; leaving keeps the last one.
+      list.querySelectorAll('.work-row').forEach(row => {
+        const show = () => preview.querySelectorAll('img').forEach(img =>
+          img.classList.toggle('active', img.dataset.i === row.dataset.i));
+        row.addEventListener('mouseenter', show);
+        row.addEventListener('focus', show);
       });
 
-      /* ── Footer ── */
-      const footer = document.getElementById('footer');
-      const f = config.footer;
-      footer.innerHTML = `
-        <div class="footer-inner">
-          <div class="footer-left">
-            <div class="footer-tagline">${f.tagline}</div>
-          </div>
-          <div class="footer-social">
-            ${f.social.map(s => `<a href="${s.url}" target="_blank" rel="noopener">${s.label}</a>`).join('')}
-          </div>
-        </div>
-      `;
-
-      /* ── Scroll: nav shrink ── */
+      /* ── Scroll: nav background ── */
       const nav = document.getElementById('nav');
-      const heroEl = document.getElementById('hero');
-      const obs1 = new IntersectionObserver(([e]) => {
+      new IntersectionObserver(([e]) => {
         nav.classList.toggle('scrolled', !e.isIntersecting);
-      }, { threshold: 0.8 });
-      obs1.observe(heroEl);
+      }, { threshold: 0.8 }).observe(document.getElementById('hero'));
 
-      /* ── Scroll: section reveal ── */
-      const obs2 = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) e.target.classList.add('visible');
-        });
-      }, { threshold: 0.08 });
-      document.querySelectorAll('.section').forEach(s => obs2.observe(s));
-
+      /* ── Scroll: reveal the index ── */
+      const work = document.getElementById('work');
+      new IntersectionObserver(([e], obs) => {
+        if (e.isIntersecting) { work.classList.add('visible'); obs.disconnect(); }
+      }, { threshold: 0.1 }).observe(work);
     })();
   </script>
 </body>

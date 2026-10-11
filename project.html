@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nenad M</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav scrolled" id="nav">
+    <a href="index.html" class="nav-logo" id="nav-logo"></a>
+    <ul class="nav-links" id="nav-links"></ul>
+  </nav>
+
+  <main class="project" id="project"></main>
+
+  <!-- FOOTER -->
+  <footer class="footer" id="footer"></footer>
+
+  <script src="config.js"></script>
+  <script src="site.js"></script>
+  <script>
+    (() => {
+      const config = CONFIG;
+      const projects = config.projects;
+      const slug = new URLSearchParams(location.search).get('p');
+      const i = projects.findIndex(p => p.slug === slug);
+      if (i === -1) { location.replace('index.html#work'); return; }
+
+      const p = projects[i];
+      const next = projects[(i + 1) % projects.length];
+      document.title = `${p.title} — ${config.siteTitle}`;
+
+      const arrow = `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
+      const back = `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>`;
+      const external = `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M8 7h9v9"/></svg>`;
+
+      const media = (p.videos || []).map(v => `
+        <div class="project-embed" style="aspect-ratio:${v.ratio || 16 / 9}">
+          <iframe src="https://player.vimeo.com/video/${v.id}?title=0&byline=0&portrait=0&dnt=1"
+            allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"
+            title="${p.title}"></iframe>
+        </div>`).join('');
+      const still = !media && p.thumb
+        ? `<div class="project-still"><img src="${p.thumb}" alt="${p.title}"></div>` : '';
+
+      document.getElementById('project').innerHTML = `
+        <a href="index.html#work" class="project-back">${back} All work</a>
+
+        <header class="project-header">
+          <h1 class="project-title">${p.title}</h1>
+          <p class="project-summary">${p.summary}</p>
+          <dl class="project-meta">
+            <div><dt>Discipline</dt><dd>${p.discipline}</dd></div>
+            ${p.tags ? `<div><dt>Tools</dt><dd>${p.tags.join(', ')}</dd></div>` : ''}
+          </dl>
+          ${p.url ? `<a class="project-link" href="${p.url}" target="_blank" rel="noopener">${p.urlLabel || 'Visit'} ${external}</a>` : ''}
+        </header>
+
+        <div class="project-media">${media}${still}</div>
+
+        <a class="project-next" href="project.html?p=${next.slug}">
+          <span class="project-next-label">Next project</span>
+          <span class="project-next-title">${next.title} ${arrow}</span>
+        </a>
+      `;
+    })();
+  </script>
+</body>
+</html>
