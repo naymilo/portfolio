@@ -62,7 +62,7 @@
       // swallow trackpad momentum until it dies down, so the glide isn't followed by a jolt
       lock();
       if (reduce || Math.abs(dist) < 2) { scrollTo(0, top); syncHash(); return; }
-      const duration = Math.min(1100, 700 + Math.abs(dist) * 0.25);
+      const duration = Math.min(750, 420 + Math.abs(dist) * 0.18);   // ≈ 0.6s for a full screen
       const t0 = performance.now();
       animating = true;
       const step = now => {
