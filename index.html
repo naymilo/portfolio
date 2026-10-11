@@ -72,7 +72,12 @@
       /* ── Hero ── */
       const hero = config.hero;
       const headlineEl = document.getElementById('hero-headline');
-      headlineEl.textContent = hero.headline;
+      hero.headline.split('\n').forEach(line => {
+        const span = document.createElement('span');
+        span.className = 'hero-line';
+        span.textContent = line;
+        headlineEl.appendChild(span);
+      });
       if (hero.headlineLineHeight) headlineEl.style.lineHeight = hero.headlineLineHeight;
       document.getElementById('hero-subtext').textContent = hero.subtext;
       const dim = hero.dimOpacity ?? 0.4;
