@@ -29,6 +29,16 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Homepage: scrolling snaps between the hero and the work index.
+   Mandatory with a mouse/trackpad; gentler on touch, where mandatory snapping fights long swipes. */
+html.snap { scroll-snap-type: y proximity; }
+@media (hover: hover) and (pointer: fine) {
+  html.snap { scroll-snap-type: y mandatory; }
+}
+.snap .hero,
+.snap .work { scroll-snap-align: start; }
+.snap .footer { scroll-snap-align: end; }
+
 body {
   font-family: var(--font-body);
   background: var(--bg);
@@ -201,7 +211,7 @@ a:focus-visible {
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  pointer-events: none;
+  cursor: pointer;
   opacity: 0;
   animation: fadeUp 1s var(--ease-out) 1s forwards;
 }
@@ -349,6 +359,14 @@ a:focus-visible {
   border-radius: 4px;
   overflow: hidden;
   background: var(--bg-elevated);
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 0.4s var(--ease-out), transform 0.6s var(--ease-out);
+}
+
+.work-preview.showing {
+  opacity: 1;
+  transform: none;
 }
 
 .work-preview img {

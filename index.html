@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="snap">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -104,16 +104,20 @@
         </li>`).join('');
 
       preview.innerHTML = projects
-        .map((p, i) => p.thumb ? `<img src="${p.thumb}" alt="" data-i="${i}"${i === 0 ? ' class="active"' : ''}>` : '')
+        .map((p, i) => p.thumb ? `<img src="${p.thumb}" alt="" data-i="${i}">` : '')
         .join('');
 
-      // Hovering a row crossfades the preview; leaving keeps the last one.
+      // The preview only shows while a row is hovered (or focused); moving between rows crossfades.
+      const show = i => {
+        preview.classList.toggle('showing', i !== null);
+        preview.querySelectorAll('img').forEach(img => img.classList.toggle('active', img.dataset.i === i));
+      };
       list.querySelectorAll('.work-row').forEach(row => {
-        const show = () => preview.querySelectorAll('img').forEach(img =>
-          img.classList.toggle('active', img.dataset.i === row.dataset.i));
-        row.addEventListener('mouseenter', show);
-        row.addEventListener('focus', show);
+        row.addEventListener('mouseenter', () => show(row.dataset.i));
+        row.addEventListener('focus', () => show(row.dataset.i));
+        row.addEventListener('blur', () => show(null));
       });
+      list.addEventListener('mouseleave', () => show(null));
 
       /* ── Scroll: nav background ── */
       const nav = document.getElementById('nav');
