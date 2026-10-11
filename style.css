@@ -23,7 +23,6 @@
   box-sizing: border-box;
 }
 
-/* Homepage hero ↔ work transitions are animated in site.js (homeScroll) */
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
