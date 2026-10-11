@@ -21,8 +21,8 @@ const CONFIG = {
   },
 
   hero: {
-    headline: "Creative work across game development, tooling & design",
-    subtext: "A multi-disciplinary portfolio",
+    headline: "Design, code and things in between.",
+    subtext: "A multidisciplinary portfolio by Nenad M.",
     headlineLineHeight: 1.1,  // adjust to control space between lines (e.g. 0.9 tight → 1.4 loose)
     dimOpacity: 0.31          // dark overlay over the sphere (0 = none, 1 = black)
   },
