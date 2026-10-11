@@ -53,53 +53,62 @@
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const workTop = () => work.offsetTop;
     const EDGE = 2;                       // px of slack when deciding "at the top of the work"
-    const easeInOutQuart = t => (t < 0.5 ? 8 * t ** 4 : 1 - (-2 * t + 2) ** 4 / 2);
+    // starts moving immediately, settles softly — feels responsive
+    const easeOutQuart = t => 1 - (1 - t) ** 4;
 
-    let animating = false, locked = false, lockTimer = 0;
+    let animating = false, animId = 0;
+    let lockDir = 0, lockTimer = 0;       // direction whose leftover momentum is being swallowed
 
     function animateTo(top) {
       const start = scrollY, dist = top - start;
-      // swallow trackpad momentum until it dies down, so the glide isn't followed by a jolt
-      lock();
+      const dir = Math.sign(dist);
+      lock(dir);
       if (reduce || Math.abs(dist) < 2) { scrollTo(0, top); syncHash(); return; }
-      const duration = Math.min(750, 420 + Math.abs(dist) * 0.18);   // ≈ 0.6s for a full screen
-      const t0 = performance.now();
+      const duration = Math.min(600, 340 + Math.abs(dist) * 0.2);   // ≈ 0.5s for a full screen
+      const t0 = performance.now(), id = ++animId;                   // a newer glide cancels this one
       animating = true;
       const step = now => {
+        if (id !== animId) return;
         const t = Math.min(1, (now - t0) / duration);
-        scrollTo(0, start + dist * easeInOutQuart(t));
+        scrollTo(0, start + dist * easeOutQuart(t));
         if (t < 1) requestAnimationFrame(step);
-        else { animating = false; lock(); syncHash(); }
+        else { animating = false; lock(dir); syncHash(); }
       };
       requestAnimationFrame(step);
     }
 
-    function lock() {
-      locked = true;
+    // Swallow trackpad momentum in `dir` until it pauses — but never block the other direction.
+    function lock(dir) {
+      lockDir = dir;
       clearTimeout(lockTimer);
-      lockTimer = setTimeout(() => { if (!animating) locked = false; }, 160);
+      lockTimer = setTimeout(() => { if (!animating) lockDir = 0; }, 140);
     }
 
-    // which way should a scroll of `dir` (+1 down, -1 up) go from here? null = scroll normally
-    function snapTarget(dir) {
+    // where should a scroll of `delta` px go from here? null = let the page scroll normally
+    function snapTarget(delta) {
       const y = scrollY, wt = workTop();
-      if (y < wt - EDGE) return dir > 0 ? wt : 0;     // anywhere in the hero
-      if (y <= wt + EDGE && dir < 0) return 0;          // at the top of the work, going up
+      if (y < wt - EDGE) return delta > 0 ? wt : 0;                  // anywhere in the hero
+      if (delta < 0 && y + delta <= wt + EDGE) return 0;              // going up past the top of the work
       return null;
+    }
+
+    function glideFrom(delta) {
+      const target = snapTarget(delta);
+      if (target === null) return false;
+      const dir = Math.sign(target - scrollY);
+      // same direction as a glide in progress / its momentum: just swallow it
+      if (dir === lockDir || dir === 0) { if (dir !== 0) lock(dir); return true; }
+      animateTo(target);
+      return true;
     }
 
     /* Mouse wheel / trackpad */
     addEventListener('wheel', e => {
       if (e.ctrlKey || Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;   // pinch-zoom, sideways swipes
-      if (animating || locked) {
-        if (snapTarget(Math.sign(e.deltaY)) !== null || animating) { e.preventDefault(); lock(); }
-        return;
-      }
-      if (Math.abs(e.deltaY) < 1) return;
-      const target = snapTarget(Math.sign(e.deltaY));
-      if (target === null) return;
-      e.preventDefault();
-      if (Math.abs(target - scrollY) > EDGE) animateTo(target);
+      if (e.deltaY === 0) return;
+      // leftover momentum in the glide's direction is eaten wherever we are, so the landing doesn't drift
+      if (lockDir !== 0 && Math.sign(e.deltaY) === lockDir) { e.preventDefault(); lock(lockDir); return; }
+      if (glideFrom(e.deltaY)) e.preventDefault();
     }, { passive: false });
 
     /* Touch: a swipe past a small threshold triggers the glide */
@@ -110,10 +119,9 @@
       if (animating) { e.preventDefault(); return; }
       const dy = touchY - e.touches[0].clientY;            // > 0 = finger moving up = scroll down
       if (dy === 0) return;
-      const target = snapTarget(Math.sign(dy));
-      if (target === null) return;
+      if (snapTarget(dy) === null) return;
       e.preventDefault();
-      if (Math.abs(dy) > 30) { touchY = null; if (Math.abs(target - scrollY) > EDGE) animateTo(target); }
+      if (Math.abs(dy) > 30) { touchY = null; glideFrom(dy); }
     }, { passive: false });
     addEventListener('touchend', () => { touchY = null; }, { passive: true });
 
@@ -123,10 +131,11 @@
       const down = ['ArrowDown', 'PageDown', ' '].includes(e.key) && !e.shiftKey;
       const up = ['ArrowUp', 'PageUp'].includes(e.key) || (e.key === ' ' && e.shiftKey);
       if (!down && !up) return;
-      const target = snapTarget(down ? 1 : -1);
-      if (target === null) return;
+      const delta = (down ? 1 : -1) * innerHeight * 0.4;
+      if (snapTarget(delta) === null) return;
       e.preventDefault();
-      if (!animating && Math.abs(target - scrollY) > EDGE) animateTo(target);
+      lockDir = 0;                         // a key press is always a fresh intent
+      glideFrom(delta);
     });
 
     /* Keep the URL honest: #work on the work section, clean at the top */
