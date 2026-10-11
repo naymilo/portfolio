@@ -36,6 +36,23 @@ const CONFIG = {
 
   projects: [
     {
+      slug: "swing",
+      title: "Swing",
+      discipline: "Product",
+      summary: "A tennis and pickleball app. One tap to start tracking a match.",
+      tags: ["Figma", "Prototype", "Creative coding"],
+      thumb: "assets/thumbs/tennis-app.jpg",
+      url: "https://pickleballtesiting.pages.dev/",
+      urlLabel: "Open the prototype"
+    },
+    {
+      slug: "temp",
+      title: "Temp",
+      discipline: "Product",
+      summary: "A sound app. Placeholder — details coming.",
+      tags: []
+    },
+    {
       slug: "wordscapes",
       title: "Wordscapes",
       discipline: "Game UI",
@@ -70,16 +87,6 @@ const CONFIG = {
       tags: ["Unreal", "Environment art", "3D"],
       thumb: "assets/thumbs/unreal-environments.jpg",
       videos: [{ id: "1031729867", ratio: 16 / 9 }]
-    },
-    {
-      slug: "swing",
-      title: "Swing",
-      discipline: "Product",
-      summary: "A tennis and pickleball app. One tap to start tracking a match.",
-      tags: ["Figma", "Prototype", "Creative coding"],
-      thumb: "assets/thumbs/tennis-app.jpg",
-      url: "https://pickleballtesiting.pages.dev/",
-      urlLabel: "Open the prototype"
     }
   ],
 
