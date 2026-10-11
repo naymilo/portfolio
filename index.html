@@ -56,7 +56,13 @@
   <!-- CONFIG — edit config.js to update the entire site -->
   <script src="config.js"></script>
   <script src="site.js"></script>
-  <script type="module" src="sphere.js"></script>
+  <script type="module">
+    import { createParticleSphere } from './particle-sphere.js';
+    // Tuned in sphere-lab.html — change the look there, then update DEFAULTS in particle-sphere.js.
+    createParticleSphere(document.getElementById('sphere'), undefined, {
+      pauseWhenHidden: document.getElementById('hero')
+    });
+  </script>
 
   <script>
     (() => {
