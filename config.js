@@ -90,17 +90,6 @@ const CONFIG = {
             ]
           },
           {
-            label: "Process",
-            body: [
-              "I started from the court, not the dashboard: shot maps first, then the screens around them."
-            ],
-            gallery: [
-              { label: "Sketches" },
-              { label: "Wireframes" },
-              { label: "Final screens" }
-            ]
-          },
-          {
             label: "Where it stands",
             body: [
               "Swing is a working prototype. Ball tracking works; the matches and stats shown here are sample data.",
