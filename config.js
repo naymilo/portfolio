@@ -135,10 +135,13 @@ const CONFIG = {
           {
             label: "Listen",
             body: [
-              "Rain, with a whispered bedtime story on top. Put headphones on."
+              "Rain, with a bedtime story on top. Put headphones on."
             ],
-            // set src to the mixed clip (mp3/m4a) once it's ready
-            audio: { title: "Rain and a whispered story", label: "Clip coming soon" }
+            audio: {
+              title: "Rain and a bedtime story",
+              src: "assets/sleep-dojo/listen.m4a",
+              credit: "“The Elves and the Shoemaker” by the Brothers Grimm, tr. Margaret Hunt, adapted. Voice generated with Kokoro."
+            }
           },
           {
             label: "What matters to users",
@@ -158,7 +161,7 @@ const CONFIG = {
             label: "Where it stands",
             body: [
               "Sleep Dojo is a working prototype you can try in the browser.",
-              "Next: more soundscapes, and whispered stories layered over them."
+              "Next: more soundscapes, and bedtime stories layered over them."
             ]
           }
         ]
