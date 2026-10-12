@@ -110,7 +110,7 @@ const CONFIG = {
       urlLabel: "Open the prototype",
 
       caseStudy: {
-        hero: { label: "Player screen", ratio: 16 / 10 },
+        hero: { label: "Sign in", ratio: 16 / 10, src: "assets/sleep-dojo/hero.webp", fill: true },
         sections: [
           {
             label: "Why I built it",
@@ -122,13 +122,14 @@ const CONFIG = {
           {
             label: "The idea",
             body: [
-              "Open it, pick a sound, sleep. No ads, no feed to scroll, nothing that stops halfway through the night. Steady sound that masks the noises that wake you, and a gentle alarm in the morning."
+              "Open it, pick a sound, sleep. No ads, no feed to scroll, nothing that stops halfway through the night. Steady sound that masks the noises that wake you, and an alarm for the morning."
             ]
           },
           {
             label: "Who it's for",
             body: [
-              "Light sleepers. People who wake up to every car door and barking dog, and anyone whose mind won't quiet down at night."
+              "Light sleepers. People who wake up to every car door and barking dog, and anyone whose mind won't quiet down at night.",
+              "It's built with ADHD in mind: brown noise up front, and tips for layering sounds into something that works for you."
             ]
           },
           {
@@ -142,18 +143,15 @@ const CONFIG = {
           {
             label: "What matters to users",
             features: [
-              { title: "No ads, ever",
-                body: "Nothing breaks the sound. No pre-rolls, no pop-ups, no upsell at 3am.",
-                image: { label: "Sound library" } },
-              { title: "Sound that doesn't stop",
-                body: "Seamless loops that play all night, with no gaps or fades to wake you.",
-                image: { label: "Player" } },
-              { title: "One tap to sleep",
-                body: "Pick a sound and put the phone down. A dark, quiet screen that stays out of the way.",
-                image: { label: "Sleep screen" } },
-              { title: "A gentle wake up",
-                body: "An alarm that eases you out of sleep instead of jolting you awake.",
-                image: { label: "Alarm" } }
+              { title: "Nothing in the way",
+                body: "No ads, no pop-ups, no upsell at 3am. Lock your screen and the sound keeps playing all night.",
+                image: { label: "Player", src: "assets/sleep-dojo/player.webp" } },
+              { title: "Mix your own",
+                body: "Brown, pink, and white noise, plus rain, ocean, thunder, fan, and more. Turn on as many as you like and layer them.",
+                image: { label: "Sounds", src: "assets/sleep-dojo/sounds.webp" } },
+              { title: "An alarm built in",
+                body: "Set a wake-up time and the days it repeats, right next to your sounds.",
+                image: { label: "Alarm", src: "assets/sleep-dojo/alarm.webp" } }
             ]
           },
           {

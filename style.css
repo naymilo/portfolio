@@ -562,6 +562,20 @@ a:focus-visible {
   padding: 7% 0;
 }
 
+/* landscape images (e.g. a full-screen web capture) fill the tile edge to edge */
+.cs-fill img {
+  object-fit: cover !important;
+  padding: 0 !important;
+}
+
+.cs-features-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.cs-features-3 .cs-figure {
+  aspect-ratio: 3 / 4 !important;
+}
+
 /* until the Figma export lands */
 .cs-placeholder {
   display: flex;
@@ -834,7 +848,8 @@ a:focus-visible {
     grid-template-columns: 1fr;
     padding: 3rem 0;
   }
-  .cs-features {
+  .cs-features,
+  .cs-features-3 {
     grid-template-columns: 1fr;
     gap: 2.5rem;
   }

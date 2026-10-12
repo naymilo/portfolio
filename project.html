@@ -51,7 +51,7 @@
 
       // An image slot: the real image once `src` is set, otherwise a labelled placeholder.
       const figure = (img, extra = '') => img.src
-        ? `<figure class="cs-figure ${extra}" style="aspect-ratio:${img.ratio || 16 / 10}"><img src="${img.src}" alt="${img.alt || img.label || ''}" loading="lazy"></figure>`
+        ? `<figure class="cs-figure ${extra}${img.fill ? ' cs-fill' : ''}" style="aspect-ratio:${img.ratio || 16 / 10}"><img src="${img.src}" alt="${img.alt || img.label || ''}" loading="lazy"></figure>`
         : `<figure class="cs-figure cs-placeholder ${extra}" style="aspect-ratio:${img.ratio || 16 / 10}"><span>${img.label || 'Image'}</span></figure>`;
 
       const paragraphs = body => (body || []).map(t => `<p>${t}</p>`).join('');
@@ -87,7 +87,7 @@
               <h2 class="cs-label">${sec.label}</h2>
               <div class="cs-body">
                 ${paragraphs(sec.body)}
-                ${sec.features ? `<div class="cs-features">${sec.features.map(f => `
+                ${sec.features ? `<div class="cs-features${sec.features.length === 3 ? ' cs-features-3' : ''}">${sec.features.map(f => `
                   <div class="cs-feature${f.images ? ' cs-feature-wide' : ''}">
                     ${f.image ? figure(f.image) : ''}
                     ${f.images ? `<div class="cs-pair">${f.images.map(img => figure(img)).join('')}</div>` : ''}
