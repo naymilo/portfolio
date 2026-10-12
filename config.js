@@ -221,10 +221,48 @@ const CONFIG = {
       slug: "comfyui-3d",
       title: "3D asset pipeline",
       discipline: "AI tooling",
-      summary: "A ComfyUI workflow that generates 3D assets in bulk.",
-      tags: ["ComfyUI", "AI", "3D"],
+      summary: "One 2D image in, a 3D model out. A node-based ComfyUI workflow for generating assets.",
+      tags: ["ComfyUI", "Hunyuan3D", "AI", "3D"],
       thumb: "assets/thumbs/comfyui-3d.jpg",
-      videos: [{ id: "1130410040", ratio: 1280 / 675 }]
+      videos: [{ id: "1130410040", ratio: 1280 / 675 }],
+
+      caseStudy: {
+        hero: { label: "Workflow demo", vimeo: "1130410040", ratio: 1280 / 675 },
+        sections: [
+          {
+            label: "What ComfyUI is",
+            body: [
+              "ComfyUI is an open-source, node-based tool for running generative AI models. Instead of one prompt box, you build a graph. Each node does one job, like loading a model, encoding an image, or sampling, and you wire them together so the output of one feeds the next.",
+              "I built this workflow when ComfyUI first added native image-to-3D models."
+            ]
+          },
+          {
+            label: "How the graph works",
+            body: [
+              "Read left to right, the workflow is five steps:"
+            ],
+            flow: [
+              { title: "Load", tool: "Hunyuan3D 2", detail: "The image-to-3D model checkpoint" },
+              { title: "Input", tool: "One image", detail: "A plain product shot of a cup" },
+              { title: "Encode", tool: "CLIP Vision", detail: "Turns the image into conditioning the model understands" },
+              { title: "Sample", tool: "KSampler", detail: "Denoises a 3D latent, step by step" },
+              { title: "Mesh", tool: "Decode + export", detail: "Latent to voxels to a mesh, saved as a model file" }
+            ]
+          },
+          {
+            label: "The result",
+            body: [
+              "I gave it a simple cup, and it produced a full 3D model in under a minute. One image in, a usable asset out, from a single graph."
+            ]
+          },
+          {
+            label: "Why it matters",
+            body: [
+              "Because it's a graph, the same workflow runs on a whole folder of images. Swap the input, queue a batch, and get a set of models back. That's the start of a real asset pipeline."
+            ]
+          }
+        ]
+      }
     },
     {
       slug: "unity-light-baking",

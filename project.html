@@ -58,6 +58,15 @@
 
       const paragraphs = body => (body || []).map(t => `<p>${t}</p>`).join('');
 
+      // A small numbered flow of steps with arrows between them.
+      const flowList = (steps, label = 'Steps') => `<ol class="cs-flow" style="--n:${steps.length}" aria-label="${label}">${steps.map((f, n) => `
+          <li class="cs-flow-step">
+            <span class="cs-flow-num">${String(n + 1).padStart(2, '0')}</span>
+            <span class="cs-flow-title">${f.title}</span>
+            <span class="cs-flow-tool">${f.tool}</span>
+            <span class="cs-flow-detail">${f.detail}</span>
+          </li>`).join('')}</ol>`;
+
       // A minimal audio player; without src it shows a quiet "coming soon" state.
       const play = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>`;
       const pause = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>`;
@@ -72,13 +81,7 @@
           ${a.src ? `<audio preload="metadata" src="${a.src}"></audio>` : ''}
         </div>
         ${a.credit ? `<p class="cs-audio-credit">${a.credit}</p>` : ''}
-        ${a.flow ? `<ol class="cs-flow" aria-label="How this clip was made">${a.flow.map((f, n) => `
-          <li class="cs-flow-step">
-            <span class="cs-flow-num">${String(n + 1).padStart(2, '0')}</span>
-            <span class="cs-flow-title">${f.title}</span>
-            <span class="cs-flow-tool">${f.tool}</span>
-            <span class="cs-flow-detail">${f.detail}</span>
-          </li>`).join('')}</ol>` : ''}`;
+        ${a.flow ? flowList(a.flow, 'How this clip was made') : ''}`;
 
       let content;
       if (p.caseStudy) {
@@ -105,6 +108,7 @@
                     <p>${f.body}</p>
                   </div>`).join('')}</div>` : ''}
                 ${sec.gallery ? `<div class="cs-gallery">${sec.gallery.map(g => figure({ ratio: 4 / 3, ...g })).join('')}</div>` : ''}
+                ${sec.flow ? flowList(sec.flow) : ''}
                 ${sec.audio ? audioPlayer(sec.audio) : ''}
               </div>
             </section>`).join('')}
