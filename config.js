@@ -177,11 +177,45 @@ const CONFIG = {
     {
       slug: "wordscapes",
       title: "Wordscapes",
-      discipline: "Game UI",
-      summary: "UI, Spine animation, and Unity integration work for Wordscapes.",
-      tags: ["UI", "Unity", "Spine"],
+      discipline: "Tech art",
+      summary: "A snapshot of my work as a senior technical artist on one of mobile's biggest word games.",
+      tags: ["Unity", "Spine", "Tooling", "AI pipelines"],
       thumb: "assets/thumbs/wordscapes.jpg",
-      videos: [{ id: "1013260534", ratio: 4 / 3 }]
+      videos: [{ id: "1013260534", ratio: 4 / 3 }],
+
+      caseStudy: {
+        hero: { label: "Reel", vimeo: "1013260534", ratio: 4 / 3 },
+        sections: [
+          {
+            label: "The game",
+            body: [
+              "Wordscapes is a word puzzle game by PeopleFun, played by millions of people every month. Swipe letters to make words, level after level, over calm scenic backdrops."
+            ]
+          },
+          {
+            label: "My role",
+            body: [
+              "Senior Technical Artist, working between art and engineering."
+            ],
+            features: [
+              { title: "Content integration",
+                body: "Bringing new art and content into the game in Unity, and keeping it running well." },
+              { title: "Plugins and tooling",
+                body: "Editor tools and plugins that speed up the team's day-to-day work." },
+              { title: "Animation",
+                body: "UI and Spine animation: reward sequences, particle effects, and transitions." },
+              { title: "AI pipelines",
+                body: "Pipelines that use AI to speed up art and content production." }
+            ]
+          },
+          {
+            label: "This reel",
+            body: [
+              "A quick snapshot of the game, plus some of the work behind the scenes."
+            ]
+          }
+        ]
+      }
     },
     {
       slug: "comfyui-3d",
