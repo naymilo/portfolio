@@ -196,10 +196,40 @@ const CONFIG = {
       slug: "unity-light-baking",
       title: "Unity tooling, pre-AI",
       discipline: "Tech art",
-      summary: "Light baking tools for Unity, built by hand before AI coding tools. Mesh cloning and baked light maps saved into prefabs.",
-      tags: ["Unity", "Tooling", "Lighting"],
+      summary: "A set of Unity editor tools and plugins, written by hand before AI coding tools existed.",
+      tags: ["Unity", "C#", "Cinemachine"],
       thumb: "assets/thumbs/unity-light-baking.jpg",
-      videos: [{ id: "836761841", ratio: 16 / 9 }]
+      videos: [{ id: "836761841", ratio: 16 / 9 }],
+
+      caseStudy: {
+        hero: { label: "Tools demo", vimeo: "836761841", ratio: 16 / 9 },
+        sections: [
+          {
+            label: "Why pre-AI",
+            body: [
+              "Every tool here was written before AI coding assistants. Editor windows, importers, analyzer rules: all built from the Unity docs, forum threads, and a lot of trial and error.",
+              "Today, AI makes tools like these much faster to build. Back then, each one took real time, and that's the point of showing them."
+            ]
+          },
+          {
+            label: "The tools",
+            features: [
+              { title: "Light baking workflow",
+                body: "Bake lighting for a whole environment and save the light maps inside a prefab, so lit pieces can be cloned and reused anywhere." },
+              { title: "Camera management",
+                body: "A Cinemachine-based system for switching cameras and moving through a scene quickly." },
+              { title: "Duplicate asset rules",
+                body: "Analyzer rules that catch duplicate assets before they bloat the build." },
+              { title: "Asset parser",
+                body: "Scans the whole project and reports texture sizes, max sizes, textures that aren't a power of two, and more." },
+              { title: "Font swapper",
+                body: "A plugin that cycles through every font in the game, to compare type in context." },
+              { title: "Importers and prefab workflows",
+                body: "Custom importers and prefab tools that keep assets consistent as they come into the project." }
+            ]
+          }
+        ]
+      }
     },
     {
       slug: "unreal-environments",
