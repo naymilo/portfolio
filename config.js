@@ -47,7 +47,7 @@ const CONFIG = {
 
       // Case study page. Images: set `src` to a Figma export; until then a labelled placeholder shows.
       caseStudy: {
-        hero: { label: "Record screen", ratio: 16 / 10 },
+        hero: { label: "Live tracking", ratio: 16 / 10, src: "assets/swing/tracking.png" },
         sections: [
           {
             label: "Why I built it",
