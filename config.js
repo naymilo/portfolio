@@ -72,6 +72,9 @@ const CONFIG = {
           {
             label: "What matters to players",
             features: [
+              { title: "Progress over time",
+                body: "Rating trend, win rate, streaks. A reason to open the app after the next game.",
+                image: { label: "Profile", src: "assets/swing/profile.png" } },
               { title: "One tap to start",
                 body: "Setup is the enemy. Pick the sport and the format, tap once, and play.",
                 image: { label: "Record screen", src: "assets/swing/record.png" } },
@@ -83,10 +86,7 @@ const CONFIG = {
                 image: { label: "Match analysis", src: "assets/swing/analysis.png" } },
               { title: "One thing to fix",
                 body: "Instead of forty charts, Insights leads with the single biggest opportunity, a drill plan, and clips of the moments that matter.",
-                image: { label: "Insights", src: "assets/swing/insights.png" } },
-              { title: "Progress over time",
-                body: "Rating trend, win rate, streaks. A reason to open the app after the next game.",
-                image: { label: "Profile" } }
+                image: { label: "Insights", src: "assets/swing/insights.png" } }
             ]
           },
           {
