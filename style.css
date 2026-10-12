@@ -617,6 +617,16 @@ a:focus-visible {
   margin-bottom: 1.4rem;
 }
 
+.cs-feature-wide {
+  grid-column: 1 / -1;
+}
+
+.cs-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem;
+}
+
 .cs-feature h3 {
   font-size: 1.15rem;
   font-weight: 500;
