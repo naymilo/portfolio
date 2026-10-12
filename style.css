@@ -551,6 +551,12 @@ a:focus-visible {
   object-fit: cover;
 }
 
+/* app screens: shown whole, centred on the tile, never cropped */
+.cs-feature .cs-figure img {
+  object-fit: contain;
+  padding: 7% 0;
+}
+
 /* until the Figma export lands */
 .cs-placeholder {
   display: flex;
@@ -607,7 +613,7 @@ a:focus-visible {
 }
 
 .cs-feature .cs-figure {
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1 / 1 !important;
   margin-bottom: 1.4rem;
 }
 
