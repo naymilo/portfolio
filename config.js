@@ -52,7 +52,7 @@ const CONFIG = {
           {
             label: "Why I built it",
             body: [
-              "I play a lot of pickleball, and I always want to know what I could do better. Not in a vague way — in numbers. Where did the ball land? Which shots actually lost me the point?",
+              "I play a lot of pickleball, and I always want to know what I could do better. Not in a vague way, but in numbers. Where did the ball land? Which shots actually lost me the point?",
               "I wanted an app that records a live game and shows me exactly that."
             ]
           },
@@ -60,7 +60,7 @@ const CONFIG = {
             label: "The idea",
             body: [
               "Prop your phone up, tap record, play. Swing tracks the ball through the whole game and maps every shot on the court: where it landed, how fast it was, and whether it won or lost the point.",
-              "Pickleball came first. Tennis was a natural second mode — same flow, different court."
+              "Pickleball came first. Tennis was a natural second mode: same flow, different court."
             ]
           },
           {
@@ -76,7 +76,7 @@ const CONFIG = {
                 body: "Setup is the enemy. Pick the sport and the format, tap once, and play.",
                 image: { label: "Record screen" } },
               { title: "Where the ball went",
-                body: "Every shot plotted on the court. Patterns show up fast — the backhand that keeps landing long, the serve that always goes to the middle.",
+                body: "Every shot plotted on the court. Patterns show up fast: the backhand that keeps landing long, the serve that always goes to the middle.",
                 image: { label: "Shot map" } },
               { title: "Stats players already use",
                 body: "Winners, unforced errors, first-serve percentage, shot speed. Familiar numbers, compared with your last match.",
