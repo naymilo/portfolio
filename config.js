@@ -80,11 +80,7 @@ const CONFIG = {
                 image: { label: "Record screen", src: "assets/swing/record.png" } },
               { title: "Where the ball went",
                 body: "The ball is tracked live as you play. In or out, shot speed, shots, rallies, and dinks, called in real time.",
-                // two images = a wide feature, side by side
-                images: [
-                  { label: "Live tracking: in", src: "assets/swing/tracking.png" },
-                  { label: "Live tracking: out", src: "assets/swing/tracking-out.png" }
-                ] },
+                image: { label: "Live tracking: out", src: "assets/swing/tracking-out.png" } },
               { title: "Stats players already use",
                 body: "Winners, unforced errors, first-serve percentage, shot speed. Familiar numbers, compared with your last match.",
                 image: { label: "Match analysis", src: "assets/swing/analysis.png" } },
