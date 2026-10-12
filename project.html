@@ -74,8 +74,9 @@
               <div class="cs-body">
                 ${paragraphs(sec.body)}
                 ${sec.features ? `<div class="cs-features">${sec.features.map(f => `
-                  <div class="cs-feature">
+                  <div class="cs-feature${f.images ? ' cs-feature-wide' : ''}">
                     ${f.image ? figure(f.image) : ''}
+                    ${f.images ? `<div class="cs-pair">${f.images.map(img => figure(img)).join('')}</div>` : ''}
                     <h3>${f.title}</h3>
                     <p>${f.body}</p>
                   </div>`).join('')}</div>` : ''}
