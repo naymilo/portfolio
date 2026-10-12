@@ -194,9 +194,9 @@ const CONFIG = {
     },
     {
       slug: "unity-light-baking",
-      title: "Light baking workflow",
+      title: "Unity tooling, pre-AI",
       discipline: "Tech art",
-      summary: "Unity tooling for mesh cloning and saving baked light maps into prefabs.",
+      summary: "Light baking tools for Unity, built by hand before AI coding tools. Mesh cloning and baked light maps saved into prefabs.",
       tags: ["Unity", "Tooling", "Lighting"],
       thumb: "assets/thumbs/unity-light-baking.jpg",
       videos: [{ id: "836761841", ratio: 16 / 9 }]
