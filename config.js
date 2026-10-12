@@ -103,11 +103,68 @@ const CONFIG = {
       slug: "sleep-dojo",
       title: "Sleep Dojo",
       discipline: "Product",
-      summary: "Your ADHD sleep companion. A white-noise sleep and alarm app.",
+      summary: "White noise for sleep. No ads, no interruptions.",
       tags: [],
       thumb: "assets/thumbs/sleep-dojo.jpg",
       url: "https://sleepdojo.pages.dev/",
-      urlLabel: "Open the prototype"
+      urlLabel: "Open the prototype",
+
+      caseStudy: {
+        hero: { label: "Player screen", ratio: 16 / 10 },
+        sections: [
+          {
+            label: "Why I built it",
+            body: [
+              "Noise keeps waking me up at night. White noise helps, so I leaned on YouTube videos and sleep apps. They kept showing ads, or cut out in the middle of the night.",
+              "I wanted a white noise app that just plays white noise. That's it."
+            ]
+          },
+          {
+            label: "The idea",
+            body: [
+              "Open it, pick a sound, sleep. No ads, no feed to scroll, nothing that stops halfway through the night. Steady sound that masks the noises that wake you, and a gentle alarm in the morning."
+            ]
+          },
+          {
+            label: "Who it's for",
+            body: [
+              "Light sleepers. People who wake up to every car door and barking dog, and anyone whose mind won't quiet down at night."
+            ]
+          },
+          {
+            label: "Listen",
+            body: [
+              "Rain, with a whispered bedtime story on top. Put headphones on."
+            ],
+            // set src to the mixed clip (mp3/m4a) once it's ready
+            audio: { title: "Rain and a whispered story", label: "Clip coming soon" }
+          },
+          {
+            label: "What matters to users",
+            features: [
+              { title: "No ads, ever",
+                body: "Nothing breaks the sound. No pre-rolls, no pop-ups, no upsell at 3am.",
+                image: { label: "Sound library" } },
+              { title: "Sound that doesn't stop",
+                body: "Seamless loops that play all night, with no gaps or fades to wake you.",
+                image: { label: "Player" } },
+              { title: "One tap to sleep",
+                body: "Pick a sound and put the phone down. A dark, quiet screen that stays out of the way.",
+                image: { label: "Sleep screen" } },
+              { title: "A gentle wake up",
+                body: "An alarm that eases you out of sleep instead of jolting you awake.",
+                image: { label: "Alarm" } }
+            ]
+          },
+          {
+            label: "Where it stands",
+            body: [
+              "Sleep Dojo is a working prototype you can try in the browser.",
+              "Next: more soundscapes, and whispered stories layered over them."
+            ]
+          }
+        ]
+      }
     },
     {
       slug: "wordscapes",
