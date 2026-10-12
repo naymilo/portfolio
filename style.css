@@ -552,6 +552,11 @@ a:focus-visible {
 }
 
 /* app screens: shown whole, centred on the tile, never cropped */
+.cs-hero img {
+  object-fit: contain;
+  padding: 4% 0;
+}
+
 .cs-feature .cs-figure img {
   object-fit: contain;
   padding: 7% 0;
