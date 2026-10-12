@@ -735,6 +735,61 @@ a:focus-visible {
   max-width: 560px;
 }
 
+/* micro flow: how the clip was made */
+.cs-flow {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.6rem;
+  margin-top: 2.2rem;
+  max-width: 760px;
+}
+
+.cs-flow-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.9rem 1rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+/* arrow to the next step */
+.cs-flow-step:not(:last-child)::after {
+  content: '→';
+  position: absolute;
+  right: -1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.cs-flow-num {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 0.35rem;
+}
+
+.cs-flow-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.cs-flow-tool {
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+
+.cs-flow-detail {
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
 .cs-audio-empty .cs-audio-btn {
   background: var(--border-hover);
   color: var(--text-muted);
@@ -862,6 +917,13 @@ a:focus-visible {
   }
   .cs-gallery {
     grid-template-columns: 1fr;
+  }
+  .cs-flow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .cs-flow-step::after {
+    display: none;
   }
   .project-next {
     margin-top: 5rem;

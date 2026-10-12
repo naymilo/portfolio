@@ -140,7 +140,14 @@ const CONFIG = {
             audio: {
               title: "Rain and a bedtime story",
               src: "assets/sleep-dojo/listen.m4a",
-              credit: "“The Elves and the Shoemaker” by the Brothers Grimm, tr. Margaret Hunt, adapted. Voice generated with Kokoro."
+              credit: "“The Elves and the Shoemaker” by the Brothers Grimm, tr. Margaret Hunt, adapted. Voice generated with Kokoro.",
+              // how the clip was made, shown as a small flow under the player
+              flow: [
+                { title: "Story", tool: "Brothers Grimm", detail: "Public domain tale, trimmed to two minutes" },
+                { title: "Voice", tool: "Kokoro TTS", detail: "Open-source voice model, slowed to 85%" },
+                { title: "Rain", tool: "Royalty-free", detail: "Recorded rain, looped with a crossfade" },
+                { title: "Mix", tool: "Python + NumPy", detail: "Fades and levels, exported as AAC" }
+              ]
             }
           },
           {
