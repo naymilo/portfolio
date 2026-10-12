@@ -194,7 +194,7 @@ const CONFIG = {
     },
     {
       slug: "unity-light-baking",
-      title: "Unity tooling, pre-AI",
+      title: "Unity tooling",
       discipline: "Tech art",
       summary: "A set of Unity editor tools and plugins, written by hand before AI coding tools existed.",
       tags: ["Unity", "C#", "Cinemachine"],
