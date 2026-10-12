@@ -50,7 +50,9 @@
         ? `<a class="project-link" href="${p.url}" target="_blank" rel="noopener">${p.urlLabel || 'Visit'} ${external}</a>` : '';
 
       // An image slot: the real image once `src` is set, otherwise a labelled placeholder.
-      const figure = (img, extra = '') => img.src
+      const figure = (img, extra = '') => img.vimeo
+        ? `<figure class="cs-figure cs-video ${extra}" style="aspect-ratio:${img.ratio || 16 / 9}"><iframe src="https://player.vimeo.com/video/${img.vimeo}?title=0&byline=0&portrait=0&dnt=1" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy" title="${p.title}"></iframe></figure>`
+        : img.src
         ? `<figure class="cs-figure ${extra}${img.fill ? ' cs-fill' : ''}" style="aspect-ratio:${img.ratio || 16 / 10}"><img src="${img.src}" alt="${img.alt || img.label || ''}" loading="lazy"></figure>`
         : `<figure class="cs-figure cs-placeholder ${extra}" style="aspect-ratio:${img.ratio || 16 / 10}"><span>${img.label || 'Image'}</span></figure>`;
 
