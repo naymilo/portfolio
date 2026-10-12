@@ -69,7 +69,14 @@
           <span class="cs-audio-time">${a.src ? '0:00' : (a.label || 'Coming soon')}</span>
           ${a.src ? `<audio preload="metadata" src="${a.src}"></audio>` : ''}
         </div>
-        ${a.credit ? `<p class="cs-audio-credit">${a.credit}</p>` : ''}`;
+        ${a.credit ? `<p class="cs-audio-credit">${a.credit}</p>` : ''}
+        ${a.flow ? `<ol class="cs-flow" aria-label="How this clip was made">${a.flow.map((f, n) => `
+          <li class="cs-flow-step">
+            <span class="cs-flow-num">${String(n + 1).padStart(2, '0')}</span>
+            <span class="cs-flow-title">${f.title}</span>
+            <span class="cs-flow-tool">${f.tool}</span>
+            <span class="cs-flow-detail">${f.detail}</span>
+          </li>`).join('')}</ol>` : ''}`;
 
       let content;
       if (p.caseStudy) {
