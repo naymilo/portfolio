@@ -728,6 +728,13 @@ a:focus-visible {
   font-variant-numeric: tabular-nums;
 }
 
+.cs-audio-credit {
+  margin-top: 0.8rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  max-width: 560px;
+}
+
 .cs-audio-empty .cs-audio-btn {
   background: var(--border-hover);
   color: var(--text-muted);

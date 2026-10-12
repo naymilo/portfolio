@@ -68,7 +68,8 @@
           </div>
           <span class="cs-audio-time">${a.src ? '0:00' : (a.label || 'Coming soon')}</span>
           ${a.src ? `<audio preload="metadata" src="${a.src}"></audio>` : ''}
-        </div>`;
+        </div>
+        ${a.credit ? `<p class="cs-audio-credit">${a.credit}</p>` : ''}`;
 
       let content;
       if (p.caseStudy) {
