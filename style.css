@@ -534,6 +534,104 @@ a:focus-visible {
 
 .project-next:hover .project-next-title svg { transform: translateX(8px); }
 
+/* ─── CASE STUDY ─── */
+
+.cs-figure {
+  width: 100%;
+  margin: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg-elevated);
+}
+
+.cs-figure img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* until the Figma export lands */
+.cs-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--border-hover);
+  background: var(--bg-elevated);
+}
+
+.cs-placeholder span {
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.cs-hero {
+  margin-bottom: 2rem;
+}
+
+.cs-section {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2.6fr);
+  gap: 1rem 4rem;
+  padding: 4.5rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.cs-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding-top: 0.45rem;
+}
+
+.cs-body > p {
+  max-width: 58ch;
+  font-size: clamp(1.1rem, 1.5vw, 1.3rem);
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.cs-body > p + p {
+  margin-top: 1.1rem;
+}
+
+.cs-features {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3.5rem 2rem;
+}
+
+.cs-feature .cs-figure {
+  aspect-ratio: 4 / 3;
+  margin-bottom: 1.4rem;
+}
+
+.cs-feature h3 {
+  font-size: 1.15rem;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+}
+
+.cs-feature p {
+  font-size: 0.98rem;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-width: 44ch;
+}
+
+.cs-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+
 /* ─── FOOTER ─── */
 
 .footer {
@@ -641,6 +739,17 @@ a:focus-visible {
   }
   .project {
     padding-top: 7rem;
+  }
+  .cs-section {
+    grid-template-columns: 1fr;
+    padding: 3rem 0;
+  }
+  .cs-features {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .cs-gallery {
+    grid-template-columns: 1fr;
   }
   .project-next {
     margin-top: 5rem;

@@ -39,11 +39,76 @@ const CONFIG = {
       slug: "swing",
       title: "Swing",
       discipline: "Product",
-      summary: "A tennis and pickleball app. One tap to start tracking a match.",
+      summary: "Match tracking and coaching for pickleball and tennis.",
       tags: ["Figma", "Prototype", "Creative coding"],
       thumb: "assets/thumbs/tennis-app.jpg",
       url: "https://pickleballtesiting.pages.dev/",
-      urlLabel: "Open the prototype"
+      urlLabel: "Open the prototype",
+
+      // Case study page. Images: set `src` to a Figma export; until then a labelled placeholder shows.
+      caseStudy: {
+        hero: { label: "Record screen", ratio: 16 / 10 },
+        sections: [
+          {
+            label: "Why I built it",
+            body: [
+              "I play a lot of pickleball, and I always want to know what I could do better. Not in a vague way — in numbers. Where did the ball land? Which shots actually lost me the point?",
+              "I wanted an app that records a live game and shows me exactly that."
+            ]
+          },
+          {
+            label: "The idea",
+            body: [
+              "Prop your phone up, tap record, play. Swing tracks the ball through the whole game and maps every shot on the court: where it landed, how fast it was, and whether it won or lost the point.",
+              "Pickleball came first. Tennis was a natural second mode — same flow, different court."
+            ]
+          },
+          {
+            label: "Who it's for",
+            body: [
+              "Club and rec players who play a few times a week and want to get better, but don't have a coach watching every game."
+            ]
+          },
+          {
+            label: "What matters to players",
+            features: [
+              { title: "One tap to start",
+                body: "Setup is the enemy. Pick the sport and the format, tap once, and play.",
+                image: { label: "Record screen" } },
+              { title: "Where the ball went",
+                body: "Every shot plotted on the court. Patterns show up fast — the backhand that keeps landing long, the serve that always goes to the middle.",
+                image: { label: "Shot map" } },
+              { title: "Stats players already use",
+                body: "Winners, unforced errors, first-serve percentage, shot speed. Familiar numbers, compared with your last match.",
+                image: { label: "Match analysis" } },
+              { title: "One thing to fix",
+                body: "Instead of forty charts, Insights leads with the single biggest opportunity, a drill plan, and clips of the moments that matter.",
+                image: { label: "Insights" } },
+              { title: "Progress over time",
+                body: "Rating trend, win rate, streaks. A reason to open the app after the next game.",
+                image: { label: "Profile" } }
+            ]
+          },
+          {
+            label: "Process",
+            body: [
+              "I started from the court, not the dashboard: shot maps first, then the screens around them."
+            ],
+            gallery: [
+              { label: "Sketches" },
+              { label: "Wireframes" },
+              { label: "Final screens" }
+            ]
+          },
+          {
+            label: "Where it stands",
+            body: [
+              "Swing is a working prototype. Ball tracking works; the matches and stats shown here are sample data.",
+              "Next: putting it in front of real players on real courts, and tightening shot detection."
+            ]
+          }
+        ]
+      }
     },
     {
       slug: "sleep-dojo",

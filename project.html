@@ -46,20 +46,62 @@
       const still = !media && p.thumb
         ? `<div class="project-still"><img src="${p.thumb}" alt="${p.title}"></div>` : '';
 
+      const link = p.url
+        ? `<a class="project-link" href="${p.url}" target="_blank" rel="noopener">${p.urlLabel || 'Visit'} ${external}</a>` : '';
+
+      // An image slot: the real image once `src` is set, otherwise a labelled placeholder.
+      const figure = (img, extra = '') => img.src
+        ? `<figure class="cs-figure ${extra}" style="aspect-ratio:${img.ratio || 16 / 10}"><img src="${img.src}" alt="${img.alt || img.label || ''}" loading="lazy"></figure>`
+        : `<figure class="cs-figure cs-placeholder ${extra}" style="aspect-ratio:${img.ratio || 16 / 10}"><span>${img.label || 'Image'}</span></figure>`;
+
+      const paragraphs = body => (body || []).map(t => `<p>${t}</p>`).join('');
+
+      let content;
+      if (p.caseStudy) {
+        const cs = p.caseStudy;
+        content = `
+          <header class="project-header">
+            <h1 class="project-title">${p.title}</h1>
+            <p class="project-summary">${p.summary}</p>
+            ${link}
+          </header>
+
+          ${cs.hero ? figure(cs.hero, 'cs-hero') : ''}
+
+          ${cs.sections.map(sec => `
+            <section class="cs-section">
+              <h2 class="cs-label">${sec.label}</h2>
+              <div class="cs-body">
+                ${paragraphs(sec.body)}
+                ${sec.features ? `<div class="cs-features">${sec.features.map(f => `
+                  <div class="cs-feature">
+                    ${f.image ? figure(f.image) : ''}
+                    <h3>${f.title}</h3>
+                    <p>${f.body}</p>
+                  </div>`).join('')}</div>` : ''}
+                ${sec.gallery ? `<div class="cs-gallery">${sec.gallery.map(g => figure({ ratio: 4 / 3, ...g })).join('')}</div>` : ''}
+              </div>
+            </section>`).join('')}
+        `;
+      } else {
+        content = `
+          <header class="project-header">
+            <h1 class="project-title">${p.title}</h1>
+            <p class="project-summary">${p.summary}</p>
+            <dl class="project-meta">
+              <div><dt>Discipline</dt><dd>${p.discipline}</dd></div>
+              ${p.tags && p.tags.length ? `<div><dt>Tools</dt><dd>${p.tags.join(', ')}</dd></div>` : ''}
+            </dl>
+            ${link}
+          </header>
+
+          <div class="project-media">${media}${still}</div>
+        `;
+      }
+
       document.getElementById('project').innerHTML = `
         <a href="index.html#work" class="project-back">${back} All work</a>
-
-        <header class="project-header">
-          <h1 class="project-title">${p.title}</h1>
-          <p class="project-summary">${p.summary}</p>
-          <dl class="project-meta">
-            <div><dt>Discipline</dt><dd>${p.discipline}</dd></div>
-            ${p.tags ? `<div><dt>Tools</dt><dd>${p.tags.join(', ')}</dd></div>` : ''}
-          </dl>
-          ${p.url ? `<a class="project-link" href="${p.url}" target="_blank" rel="noopener">${p.urlLabel || 'Visit'} ${external}</a>` : ''}
-        </header>
-
-        <div class="project-media">${media}${still}</div>
+        ${content}
 
         <a class="project-next" href="project.html?p=${next.slug}">
           <span class="project-next-label">Next project</span>
