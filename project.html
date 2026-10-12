@@ -139,6 +139,58 @@
         </a>
       `;
 
+      /* ── Lightbox: click a case-study image to see it full size ── */
+      const shots = [...document.querySelectorAll('.cs-figure:not(.cs-placeholder):not(.cs-video) img')];
+      if (shots.length) {
+        const box = document.createElement('div');
+        box.className = 'lightbox';
+        box.setAttribute('role', 'dialog');
+        box.setAttribute('aria-modal', 'true');
+        box.setAttribute('aria-label', 'Image viewer');
+        box.innerHTML = `<img class="lightbox-img" alt=""><button class="lightbox-close" type="button" aria-label="Close">×</button>`;
+        document.body.appendChild(box);
+        const big = box.querySelector('.lightbox-img');
+        const closeBtn = box.querySelector('.lightbox-close');
+        let at = -1, lastFocus = null;
+
+        const show = i => {
+          at = (i + shots.length) % shots.length;
+          big.src = shots[at].currentSrc || shots[at].src;
+          big.alt = shots[at].alt;
+        };
+        const open = i => {
+          lastFocus = document.activeElement;
+          show(i);
+          box.classList.add('open');
+          document.documentElement.classList.add('lightbox-lock');
+          closeBtn.focus();
+        };
+        const close = () => {
+          box.classList.remove('open');
+          document.documentElement.classList.remove('lightbox-lock');
+          if (lastFocus) lastFocus.focus();
+        };
+
+        shots.forEach((img, i) => {
+          const fig = img.closest('.cs-figure');
+          fig.classList.add('zoomable');
+          fig.tabIndex = 0;
+          fig.setAttribute('role', 'button');
+          fig.setAttribute('aria-label', `View ${img.alt || 'image'} full size`);
+          fig.addEventListener('click', () => open(i));
+          fig.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(i); }
+          });
+        });
+        box.addEventListener('click', close);                 // anywhere, including the image
+        document.addEventListener('keydown', e => {
+          if (!box.classList.contains('open')) return;
+          if (e.key === 'Escape') close();
+          else if (e.key === 'ArrowRight' && shots.length > 1) show(at + 1);
+          else if (e.key === 'ArrowLeft' && shots.length > 1) show(at - 1);
+        });
+      }
+
       const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
       document.querySelectorAll('.cs-audio').forEach(el => {
         const audio = el.querySelector('audio');

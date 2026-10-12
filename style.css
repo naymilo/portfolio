@@ -559,7 +559,73 @@ a:focus-visible {
 
 .cs-feature .cs-figure img {
   object-fit: contain;
-  padding: 7% 0;
+  padding: 4% 0;
+}
+
+/* click to enlarge */
+.zoomable {
+  cursor: zoom-in;
+}
+
+.zoomable img {
+  transition: transform 0.6s var(--ease-out);
+}
+
+.zoomable:hover img {
+  transform: scale(1.02);
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4vh 4vw;
+  background: rgba(5, 5, 5, 0.94);
+  opacity: 0;
+  visibility: hidden;
+  cursor: zoom-out;
+  transition: opacity 0.3s var(--ease-out), visibility 0.3s;
+}
+
+.lightbox.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.lightbox-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 6px;
+  transform: scale(0.97);
+  transition: transform 0.4s var(--ease-out);
+}
+
+.lightbox.open .lightbox-img {
+  transform: none;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.5rem;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border-hover);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+html.lightbox-lock {
+  overflow: hidden;
 }
 
 /* landscape images (e.g. a full-screen web capture) fill the tile edge to edge */
