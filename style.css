@@ -653,6 +653,75 @@ a:focus-visible {
   margin-top: 2.5rem;
 }
 
+.cs-audio {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  max-width: 560px;
+  margin-top: 2rem;
+  padding: 1rem 1.4rem 1rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-elevated);
+}
+
+.cs-audio-btn {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--text-primary);
+  color: var(--bg);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 0.3s var(--ease-spring);
+}
+
+.cs-audio-btn:hover { transform: scale(1.06); }
+.cs-audio-btn svg { width: 20px; height: 20px; }
+
+.cs-audio-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cs-audio-title {
+  display: block;
+  font-size: 0.95rem;
+  margin-bottom: 0.55rem;
+}
+
+.cs-audio-track {
+  height: 3px;
+  border-radius: 3px;
+  background: var(--border-hover);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.cs-audio-fill {
+  width: 0;
+  height: 100%;
+  background: var(--text-primary);
+}
+
+.cs-audio-time {
+  flex: none;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.cs-audio-empty .cs-audio-btn {
+  background: var(--border-hover);
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.cs-audio-empty .cs-audio-btn:hover { transform: none; }
+
 /* ─── FOOTER ─── */
 
 .footer {

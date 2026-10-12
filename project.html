@@ -56,6 +56,20 @@
 
       const paragraphs = body => (body || []).map(t => `<p>${t}</p>`).join('');
 
+      // A minimal audio player; without src it shows a quiet "coming soon" state.
+      const play = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>`;
+      const pause = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>`;
+      const audioPlayer = a => `
+        <div class="cs-audio${a.src ? '' : ' cs-audio-empty'}">
+          <button class="cs-audio-btn" type="button" aria-label="Play" ${a.src ? '' : 'disabled'}>${play}</button>
+          <div class="cs-audio-info">
+            <span class="cs-audio-title">${a.title}</span>
+            <div class="cs-audio-track"><div class="cs-audio-fill"></div></div>
+          </div>
+          <span class="cs-audio-time">${a.src ? '0:00' : (a.label || 'Coming soon')}</span>
+          ${a.src ? `<audio preload="metadata" src="${a.src}"></audio>` : ''}
+        </div>`;
+
       let content;
       if (p.caseStudy) {
         const cs = p.caseStudy;
@@ -81,6 +95,7 @@
                     <p>${f.body}</p>
                   </div>`).join('')}</div>` : ''}
                 ${sec.gallery ? `<div class="cs-gallery">${sec.gallery.map(g => figure({ ratio: 4 / 3, ...g })).join('')}</div>` : ''}
+                ${sec.audio ? audioPlayer(sec.audio) : ''}
               </div>
             </section>`).join('')}
         `;
@@ -109,6 +124,27 @@
           <span class="project-next-title">${next.title} ${arrow}</span>
         </a>
       `;
+
+      const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+      document.querySelectorAll('.cs-audio').forEach(el => {
+        const audio = el.querySelector('audio');
+        if (!audio) return;
+        const btn = el.querySelector('.cs-audio-btn');
+        const fill = el.querySelector('.cs-audio-fill');
+        const time = el.querySelector('.cs-audio-time');
+        btn.addEventListener('click', () => (audio.paused ? audio.play() : audio.pause()));
+        audio.addEventListener('play', () => { btn.innerHTML = pause; btn.setAttribute('aria-label', 'Pause'); });
+        audio.addEventListener('pause', () => { btn.innerHTML = play; btn.setAttribute('aria-label', 'Play'); });
+        audio.addEventListener('loadedmetadata', () => { time.textContent = fmt(audio.duration); });
+        audio.addEventListener('timeupdate', () => {
+          fill.style.width = `${(audio.currentTime / audio.duration) * 100 || 0}%`;
+          time.textContent = fmt(audio.duration - audio.currentTime);
+        });
+        el.querySelector('.cs-audio-track').addEventListener('click', e => {
+          const r = e.currentTarget.getBoundingClientRect();
+          if (audio.duration) audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
+        });
+      });
     })();
   </script>
 </body>
